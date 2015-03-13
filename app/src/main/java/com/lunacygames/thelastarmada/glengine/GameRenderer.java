@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.text.format.Time;
 
+import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
 import com.lunacygames.thelastarmada.gamebattle.ActionEvent;
@@ -18,6 +19,7 @@ import com.lunacygames.thelastarmada.gameui.UIHandler;
 import com.lunacygames.thelastarmada.gameui.UIList;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
+import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
 import java.util.ArrayList;
@@ -111,6 +113,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 renderScreen(gl);
                 break;
             case LOAD_MAP:
+                MapLoader.setActiveMap(MapType.OVERWORLD);
                 map = MapLoader.loadMap(context, gl);
             case LOAD_OVERWORLD_UI:
             case BATTLE_VICTORY:
@@ -125,6 +128,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 BattleManager.reset();
                 ActionEvent.emptyActionQueue();
                 String[] enemies = { "fenrir" };
+                for(Player p : PlayerList.getPlayerList()) {
+                    p.resetStats();
+                }
                 Enemy.loadEnemyList(context, gl, enemies);
                 UIHandler.setActive(UIList.BATTLE);
                 UIHandler.loadUI(context, gl);

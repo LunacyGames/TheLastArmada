@@ -8,6 +8,7 @@ import com.lunacygames.thelastarmada.gamebattle.Enemy;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -73,6 +74,11 @@ public class Interpreter {
                     Log.d("Interpreter: ", "Enemy defeated");
                     hp = 0;
                     Enemy.reduceEnemyCount();
+                    ArrayList<String> cmdList =
+                            Enemy.getEnemyList().get(target - 4).getOnDefeatScript();
+                    for(String s : cmdList) {
+                        Interpreter.doCommand(s);
+                    }
                 }
                 Log.d("Interpreter: ", "New enemy HP" + hp);
                 Enemy.getEnemyList().get(target - 4).setHp(hp);

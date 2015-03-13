@@ -171,7 +171,7 @@ public class UIHandler {
         float size[] = new float[2];
         /* background image */
         size[0] = w;
-        size[1] = 1440.0f * (float)h/(float)w;
+        size[1] = 1440.0f * w / 1920.0f;
 
         /* the background image depends on the active map */
         Bitmap bmp = null;

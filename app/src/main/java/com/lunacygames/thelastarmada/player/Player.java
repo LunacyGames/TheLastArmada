@@ -60,6 +60,10 @@ public class Player {
         System.arraycopy(base_stats, 0, this.base_stats, 0, base_stats.length);
     }
 
+    public void resetStats() {
+        System.arraycopy(max_stats, 1, base_stats, 1, max_stats.length - 1);
+    }
+
     public void setGrowthPercent(double[] growth_percent) {
         this.growth_percent = new double[6];
         System.arraycopy(growth_percent, 0, this.growth_percent, 0, growth_percent.length);

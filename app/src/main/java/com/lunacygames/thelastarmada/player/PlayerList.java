@@ -38,11 +38,13 @@ public class PlayerList {
                 {5, 4, 3, 1, 2, 2},
                 {4, 3, 3, 1, 3, 3},
                 {3, 2, 2, 4, 3, 3},
-                {3, 1, 1, 4, 4, 4}};
+                {4, 1, 1, 4, 4, 3}};
 
-        double[][] gropw_percent = {
+        double[][] growth_percent = {
                 {0.50, 0.80, 0.50, 0.20, 0.30, 0.80},
-                {0.75, 0.75, 0.75, 0.20, 0.75, 0.75}
+                {0.60, 0.60, 0.60, 0.10, 0.60, 0.60},
+                {0.60, 0.10, 0.50, 0.70, 0.55, 0.55},
+                {0.50, 0.05, 0.50, 0.70, 0.60, 0.55}
         };
 
         Magic[] a_spell = new Magic[]{new Magic("Heal", "H"), new Magic("Nova", "N")};
@@ -60,6 +62,7 @@ public class PlayerList {
             p.setBaseStats(base_stats[i]);
             p.setMaxStats(base_stats[i]);
             p.setGrowthRate(growth_rate[i]);
+            p.setGrowthPercent(growth_percent[i]);
             players.add(p);
         }
         for(Magic m : a_spell)
