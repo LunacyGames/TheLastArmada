@@ -28,22 +28,38 @@ public class PlayerList {
         int[] texture;
         Bitmap bmp;
         /* base stats */
-        int[] hp =  {30, 28, 25, 22};
-        int[] def =  {4,  5,  4,  4};
-        int[] res =  {4,  5,  6,  6};
-        int[] atk =  {6,  5,  3,  3};
-        int[] satk = {2,  2,  6,  8};
-        int[] spd =  {5,  6,  7,  8};
+        int[][] base_stats = {
+                {30, 4, 4, 6, 2, 5},
+                {28, 5, 5, 5, 2, 6},
+                {25, 4, 6, 3, 6, 7},
+                {22, 4, 6, 3, 8, 8}};
+
+        int[][] growth_rate = {
+                {5, 4, 3, 1, 2, 2},
+                {4, 3, 3, 1, 3, 3},
+                {3, 2, 2, 4, 3, 3},
+                {3, 1, 1, 4, 4, 4}};
+
+        double[][] gropw_percent = {
+                {0.50, 0.80, 0.50, 0.20, 0.30, 0.80},
+                {0.75, 0.75, 0.75, 0.20, 0.75, 0.75}
+        };
 
         Magic[] a_spell = new Magic[]{new Magic("Heal", "H"), new Magic("Nova", "N")};
         Magic[] b_spell = new Magic[]{new Magic("Fire", "F"), new Magic("Ice", "I")};
 
+        ArrayList<int[]> textureList;
         /* Totals:   51, 51, 51, 51 */
         for(int i = 0; i < 4; i++) {
             bmp = TextureHandler.loadBitmap(context,
                     "characters/" + names[i].toLowerCase() + "_battle.png");
             texture = TextureHandler.createTexture(bmp, gl);
-            Player p = new Player(names[i], texture, hp[i] , hp[i], atk[i], satk[i], def[i], res[i], spd[i]);
+            textureList = new ArrayList<>();
+            textureList.add(texture);
+            Player p = new Player(names[i], textureList, 0, 1);
+            p.setBaseStats(base_stats[i]);
+            p.setMaxStats(base_stats[i]);
+            p.setGrowthRate(growth_rate[i]);
             players.add(p);
         }
         for(Magic m : a_spell)

@@ -1,54 +1,68 @@
 package com.lunacygames.thelastarmada.player;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by zeus on 3/10/15.
  */
 public class Player {
+
+    /* stat indexes */
+    public static final int HP_STAT = 0;
+    public static final int ATK_STAT = 1;
+    public static final int DEF_STAT = 1;
+    public static final int SATK_STAT = 1;
+    public static final int RES_STAT = 1;
+    public static final int SPD_STAT = 1;
+
+    private final double BASE = 1.1;
     String name;
 
-    private int hp;
-    private int atk;
-    private int satk;
-    private int def;
-    private int res;
-    private int spd;
-    private int exp;
-
-    private int max_hp;
-    private int max_atk;
-    private int max_satk;
-
-
-    private int max_def;
-    private int max_res;
-    private int max_spd;
-
+    private int[] base_stats;
+    private double[] growth_percent;
+    private int[] growth_rate;
+    private int[] max_stats;
     private ArrayList<Magic> magic;
+    private int activeTexture;
 
-    int[] texture;
+    ArrayList<int[]> texture;
+
+    private int exp;
+    private int level;
+
+
     /**
      * Create a Player.
      *
      *
      */
-    public Player(String name, int[] texture, int max_hp, int hp, int atk, int satk, int def, int res, int spd) {
+    public Player(String name, ArrayList<int[]> texture, int exp, int level) {
         this.magic = new ArrayList<Magic>();
         this.name = name;
-        this.hp = hp;
-        this.atk = atk;
-        this.satk = satk;
-        this.def = def;
-        this.res = res;
-        this.spd = spd;
-        this.max_hp = max_hp;
-        this.max_atk = atk;
-        this.max_satk = satk;
-        this.max_def = def;
-        this.max_res = res;
-        this.max_spd = spd;
-        this.texture = texture;
+        this.texture = new ArrayList<>(texture);
+        this.exp = exp;
+        this.level = level;
+    }
+
+    public void setGrowthRate(int[] rate) {
+        this.growth_rate = new int[6];
+        System.arraycopy(rate, 0, this.growth_rate, 0, rate.length);
+    }
+
+    public void setMaxStats(int[] max_stats) {
+        this.max_stats = new int[6];
+        System.arraycopy(max_stats, 0, this.max_stats, 0, max_stats.length);
+    }
+
+    public void setBaseStats(int[] base_stats) {
+        this.base_stats = new int[6];
+        System.arraycopy(base_stats, 0, this.base_stats, 0, base_stats.length);
+    }
+
+    public void setGrowthPercent(double[] growth_percent) {
+        this.growth_percent = new double[6];
+        System.arraycopy(growth_percent, 0, this.growth_percent, 0, growth_percent.length);
     }
 
     public void addMagic(Magic spell) {
@@ -60,51 +74,51 @@ public class Player {
     }
 
     public int getHp() {
-        return hp;
+        return this.base_stats[HP_STAT];
     }
 
     public void setHp(int hp) {
-        this.hp = hp;
+        this.base_stats[HP_STAT] = hp;
     }
 
     public int getAtk() {
-        return atk;
+        return this.base_stats[ATK_STAT];
     }
 
     public void setAtk(int atk) {
-        this.atk = atk;
+        this.base_stats[ATK_STAT] = atk;
     }
 
     public int getSatk() {
-        return satk;
+        return this.base_stats[SATK_STAT];
     }
 
     public void setSatk(int satk) {
-        this.satk = satk;
+        this.base_stats[SATK_STAT] = satk;
     }
 
     public int getDef() {
-        return def;
+        return this.base_stats[DEF_STAT];
     }
 
     public void setDef(int def) {
-        this.def = def;
+        this.base_stats[DEF_STAT] = def;
     }
 
     public int getRes() {
-        return res;
+        return this.base_stats[RES_STAT];
     }
 
     public void setRes(int res) {
-        this.res = res;
+        this.base_stats[RES_STAT] = res;
     }
 
     public int getSpd() {
-        return spd;
+        return this.base_stats[SPD_STAT];
     }
 
     public void setSpd(int spd) {
-        this.spd = spd;
+        this.base_stats[SPD_STAT] = spd;
     }
 
     public String getName() {
@@ -116,55 +130,11 @@ public class Player {
     }
 
     public int getMax_hp() {
-        return max_hp;
-    }
-
-    public void setMax_hp(int max_hp) {
-        this.max_hp = max_hp;
-    }
-
-    public int getMax_atk() {
-        return max_atk;
-    }
-
-    public void setMax_atk(int max_atk) {
-        this.max_atk = max_atk;
-    }
-
-    public int getMax_satk() {
-        return max_satk;
-    }
-
-    public void setMax_satk(int max_satk) {
-        this.max_satk = max_satk;
-    }
-
-    public int getMax_def() {
-        return max_def;
-    }
-
-    public void setMax_def(int max_def) {
-        this.max_def = max_def;
-    }
-
-    public int getMax_res() {
-        return max_res;
-    }
-
-    public void setMax_res(int max_res) {
-        this.max_res = max_res;
-    }
-
-    public int getMax_spd() {
-        return max_spd;
-    }
-
-    public void setMax_spd(int max_spd) {
-        this.max_spd = max_spd;
+        return max_stats[HP_STAT];
     }
 
     public int[] getTexture() {
-        return this.texture;
+        return this.texture.get(activeTexture);
     }
 
     public ArrayList<Magic> getMagicList() {
@@ -172,6 +142,18 @@ public class Player {
     }
 
     public void addExp(int gain) {
-
+        /* the higher the level, the less exp we get */
+        int netGain = exp + (int)(gain / Math.pow(level, BASE));
+        Random rng = new Random();
+        while(netGain > 100) {
+            level++;
+            netGain -= 100;
+            /* on level up, we increase stats according to their growth rates and percents */
+            for(int i = 0; i < 6; i++) {
+                if(rng.nextDouble() < growth_percent[i])
+                    max_stats[i] += growth_rate[i];
+            }
+        }
+        exp = netGain;
     }
 }
