@@ -35,10 +35,10 @@ public class UIHandler {
     private static ArrayList<UIWidget> ui;
     private static UIList active;
 
-    private static final int DEFAULT_TAG = 1000;
-    private static final int SPELL_TAG = 30;
-    private static final int ACTION_MENU_TAG = 10;
-    private static final int HP_LIST_TAG = 20;
+    public static final int DEFAULT_TAG = 1000;
+    public static final int SPELL_TAG = 30;
+    public static final int ACTION_MENU_TAG = 10;
+    public static final int HP_LIST_TAG = 20;
 
     private static ActionEvent currentAction;
 

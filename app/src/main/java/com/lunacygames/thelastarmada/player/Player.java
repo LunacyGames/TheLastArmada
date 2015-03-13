@@ -1,5 +1,7 @@
 package com.lunacygames.thelastarmada.player;
 
+import com.lunacygames.thelastarmada.gameui.TopMessage;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -11,10 +13,10 @@ public class Player {
     /* stat indexes */
     public static final int HP_STAT = 0;
     public static final int ATK_STAT = 1;
-    public static final int DEF_STAT = 1;
-    public static final int SATK_STAT = 1;
-    public static final int RES_STAT = 1;
-    public static final int SPD_STAT = 1;
+    public static final int DEF_STAT = 2;
+    public static final int SATK_STAT = 3;
+    public static final int RES_STAT = 4;
+    public static final int SPD_STAT = 5;
 
     private final double BASE = 1.1;
     String name;
@@ -149,8 +151,9 @@ public class Player {
         /* the higher the level, the less exp we get */
         int netGain = exp + (int)(gain / Math.pow(level, BASE));
         Random rng = new Random();
-        while(netGain > 100) {
+        while(netGain >= 100) {
             level++;
+            TopMessage.showMessage(this.name + " is now level " + Integer.toString(level) + "!");
             netGain -= 100;
             /* on level up, we increase stats according to their growth rates and percents */
             for(int i = 0; i < 6; i++) {

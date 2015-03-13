@@ -59,6 +59,8 @@ public class PlayerList {
             textureList = new ArrayList<>();
             textureList.add(texture);
             Player p = new Player(names[i], textureList, 0, 1);
+            for(int j = 0; j < base_stats[i].length; j++)
+                Log.d("Player: ", "adding base stat " + i + " " + base_stats[i][j]);
             p.setBaseStats(base_stats[i]);
             p.setMaxStats(base_stats[i]);
             p.setGrowthRate(growth_rate[i]);

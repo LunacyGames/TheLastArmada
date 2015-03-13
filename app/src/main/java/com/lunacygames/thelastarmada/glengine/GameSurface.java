@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
+import com.lunacygames.thelastarmada.gameui.TopMessage;
 import com.lunacygames.thelastarmada.gameui.UIHandler;
 
 /**
@@ -41,7 +42,11 @@ public class GameSurface extends GLSurfaceView {
     public boolean onTouchEvent(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
-        UIHandler.onMotionEvent(e, x, y);
+        if(TopMessage.isShown())
+            TopMessage.onMotionEvent(e);
+        else
+            UIHandler.onMotionEvent(e, x, y);
+
         return true;
     }
 }

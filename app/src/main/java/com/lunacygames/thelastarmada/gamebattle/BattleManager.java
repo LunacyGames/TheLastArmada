@@ -2,6 +2,7 @@ package com.lunacygames.thelastarmada.gamebattle;
 
 import android.util.Log;
 
+import com.lunacygames.thelastarmada.gameui.TopMessage;
 import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.player.PlayerList;
 import com.lunacygames.thelastarmada.gameui.UIHandler;
@@ -69,22 +70,21 @@ public class BattleManager {
                         ActionEvent.enqueue(event);
                     }
                     Log.d("BattleManager: ", "Processing action queue");
-
-                    while(!ActionEvent.isEmpty()) {
-                        event = ActionEvent.getAction();
-                        Interpreter.doCommand(event.toString());
-                    }
-                    /* TODO: check for game over/win battle */
-                    state = BattleState.SELECT_ACTION;
-                    UIHandler.showWidgetByTag(10);
+                    state = BattleState.PROCESS_ACTION_QUEUE;
                 } else {
                     Log.d("BattleManager: ", "Players remain, switching to SELECT_ACTION");
                     PlayerList.setPlayer(player + 1);
                     state = BattleState.SELECT_ACTION;
                     /* ensure the menu is visible */
-                    UIHandler.showWidgetByTag(10);
+                    UIHandler.showWidgetByTag(UIHandler.ACTION_MENU_TAG);
                 }
                 break;
+            case PROCESS_ACTION_QUEUE:
+                state = BattleState.SELECT_ACTION;
+                /* ensure the menu is visible */
+                UIHandler.showWidgetByTag(UIHandler.ACTION_MENU_TAG);
+                break;
+
         }
     }
 

@@ -10,5 +10,6 @@ public enum BattleState {
     SELECT_MAGIC,
     SELECT_ITEM,
     ADD_PLAYER_ACTION,
-    VICTORY,
+    PROCESS_ACTION_QUEUE,
+    VICTORY
 }

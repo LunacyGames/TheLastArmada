@@ -7,6 +7,7 @@ import android.opengl.GLU;
 import android.text.format.Time;
 
 import com.lunacygames.thelastarmada.gamemap.MapType;
+import com.lunacygames.thelastarmada.gameui.TopMessage;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
 import com.lunacygames.thelastarmada.gamebattle.ActionEvent;
@@ -17,6 +18,7 @@ import com.lunacygames.thelastarmada.gamemap.MapEntity;
 import com.lunacygames.thelastarmada.gamemap.MapLoader;
 import com.lunacygames.thelastarmada.gameui.UIHandler;
 import com.lunacygames.thelastarmada.gameui.UIList;
+import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
 import com.lunacygames.thelastarmada.player.Player;
@@ -111,12 +113,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 break;
             case TITLE_SCREEN:
                 renderScreen(gl);
+                TopMessage.setup();
                 break;
             case LOAD_MAP:
                 MapLoader.setActiveMap(MapType.OVERWORLD);
                 map = MapLoader.loadMap(context, gl);
-            case LOAD_OVERWORLD_UI:
+                TopMessage.showMessage("Hello, world!");
             case BATTLE_VICTORY:
+                /* TODO: add extra stuff, for now, fall through */
+            case LOAD_OVERWORLD_UI:
                 UIHandler.setActive(UIList.OVERWORLD);
                 UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.OVERWORLD);
@@ -190,23 +195,38 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             }
 
         }
-        // gl.glTranslatef(50, 50, -5);
-        // gl.glTranslatef(-100*(1 + (float)Math.cos(t)), -100*(1 + (float)Math.sin(t)), 0.0f);
-        // gl.glRotatef(180 * t/ (float)Math.PI, 0, 0, 5);
-        // t += Math.PI/100;
 
+        /* if we are in the overworld, position the camera on top of the player */
         if(GameState.getGameState() == GameStateList.OVERWORLD) {
             gl.glTranslatef(-camera[0], -camera[1], 0.0f);
             Camera.update();
         }
 
+        /* render the map */
         for(MapEntity e : map)
             e.onDraw(gl);
 
+        /* if on the overworld, draw the player sprite */
         if(GameState.getGameState() == GameStateList.OVERWORLD)
             PlayerList.onDraw(gl);
 
+        /* if we are on a battle, process the action queue if ready */
+        if(BattleManager.getState() == BattleState.PROCESS_ACTION_QUEUE) {
+            ActionEvent event;
+            if(ActionEvent.isEmpty() && !TopMessage.isShown()) {
+                BattleManager.updateState(0, null);
+            } else if(!TopMessage.isShown()) {
+                event = ActionEvent.getAction();
+                Interpreter.doCommand(event.toString());
+            }
+
+        }
+
+        /* draw the UI and draw the top message */
         UIHandler.drawUI(gl);
+        TopMessage.onDraw(gl);
+
+
 
     }
 }
