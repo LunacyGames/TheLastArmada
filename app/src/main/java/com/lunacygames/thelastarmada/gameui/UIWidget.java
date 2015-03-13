@@ -137,11 +137,11 @@ public class UIWidget {
         gl.glPopMatrix();
     }
 
-    public void onClick(MotionEvent e) {
+    public void onMotionEvent(MotionEvent e) {
         /* if we do not have a callback method, return */
         if(this.callback == null) return;
         /* otherwise, execute it */
-        this.callback.onClick(e, this);
+        this.callback.onMotionEvent(e, this);
     }
 
     public float getX() {

@@ -41,7 +41,7 @@ public class GameSurface extends GLSurfaceView {
     public boolean onTouchEvent(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
-        UIHandler.onClick(e, x, y);
+        UIHandler.onMotionEvent(e, x, y);
         return true;
     }
 }
