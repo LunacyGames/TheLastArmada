@@ -1,0 +1,11 @@
+Fenrir
+enemies/fenrir/fenrir.png
+192,256
+ATK
+50
+10
+2
+5
+4
+6
+EXP|20;SAY|You obtained Gungnir, the swaying one.;GUNGNIR
