@@ -22,6 +22,7 @@ import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
+import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
@@ -108,8 +109,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 UIHandler.setActive(UIList.START);
                 UIHandler.loadUI(context, gl);
 
-                /* initialize the players */
+                /* initialize the players and the inventory */
                 PlayerList.initPlayerList(context, gl);
+                Inventory.initInventory();
                 /* load save file */
                 SaveFileHandler.loadSaveFile(this.context);
                 GameState.setGameState(GameStateList.TITLE_SCREEN);
@@ -121,7 +123,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             case LOAD_MAP:
                 MapLoader.setActiveMap(MapType.OVERWORLD);
                 map = MapLoader.loadMap(context, gl);
-                TopMessage.showMessage("Hello, world!");
             case BATTLE_VICTORY:
                 /* TODO: add extra stuff, for now, fall through */
             case LOAD_OVERWORLD_UI:

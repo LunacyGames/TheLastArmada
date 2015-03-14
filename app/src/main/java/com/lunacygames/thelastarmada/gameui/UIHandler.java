@@ -194,14 +194,18 @@ public class UIHandler {
 
         /* characters */
         /* TODO: scale */
-        size = new float[]{64.0f, 64.0f};
+        size = new float[]{0.1f * w, 0.1f * w};
+        float[] position = {
+                0.50f * w, 0.60f * h,
+                0.55f * w, 0.75f * h,
+                0.65f * w, 0.65f * h,
+                0.70f * w, 0.50f * h};
         float xpos;
         int tag = 0;
-        xpos = w / 2;
         for(Player p : PlayerList.getPlayerList()) {
             texture = p.getTexture();
 
-            widget = new UIWidget(p.getName(), texture, tag, xpos, 0.7f * h - size[1],
+            widget = new UIWidget(p.getName(), texture, tag, position[2*tag], position[2*tag + 1],
                     size, new UICallback() {
                 @Override
                 public void onMotionEvent(MotionEvent e, UIWidget w) {
@@ -214,7 +218,6 @@ public class UIHandler {
                 }
             });
             ui.add(widget);
-            xpos += size[0] + 10;
             tag++;
         }
 

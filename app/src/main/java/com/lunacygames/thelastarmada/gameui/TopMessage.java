@@ -9,6 +9,8 @@ import com.lunacygames.thelastarmada.gameutils.TextureHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -17,6 +19,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class TopMessage {
     private static int[] texture;
+    private static Queue<String> msgqueue;
     private static String message;
     private static boolean shown;
     private static int counter;
@@ -32,10 +35,19 @@ public class TopMessage {
     };
 
     /* set the message to show on the screen */
+
+    /**
+     * Add a message to the message queue to be shown in the top bar.
+     * @param msg   The message to show.
+     */
     public static void showMessage(String msg) {
-        message = msg;
+        /* add the message to the queue */
+        msgqueue.add(msg);
+        /* if no message is currently shown, show it */
+        if(!shown)
+            message = msgqueue.remove();
         shown = true;
-        counter = 60;
+        counter = 10;
     }
 
     /**
@@ -51,6 +63,10 @@ public class TopMessage {
                 width, 0, 0.0f,                 /* bottom right vertex */
                 width,  0.05f * height, 0.0f    /* top right vertex */
         };
+
+        /* setup the message queue */
+        msgqueue = new LinkedList<String>();
+
         /* make a byte buffer to fit all floats in the square array */
         ByteBuffer buffer = ByteBuffer.allocateDirect(msgbox.length * 4);
         /* good ol' endianess */
@@ -118,7 +134,16 @@ public class TopMessage {
      */
     public static void onMotionEvent(MotionEvent e) {
         if(counter > 0) return;
-        else if(e.getAction() == MotionEvent.ACTION_UP) shown = false;
+        else if(e.getAction() == MotionEvent.ACTION_UP) {
+            /* if there is an element in the queue */
+            if(msgqueue.size() != 0) {
+                /* remove it and set it to be shown */
+                message = msgqueue.remove();
+            } else {
+                /* else, hide it */
+                shown = false;
+            }
+        }
     }
 
     /**
@@ -127,5 +152,13 @@ public class TopMessage {
      */
     public static boolean isShown() {
         return shown;
+    }
+
+    /**
+     * Clear the message queue, eliminating all messages and hides the bar.
+     */
+    public static void flushMsgQueue() {
+        msgqueue.clear();
+        shown = false;
     }
 }

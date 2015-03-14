@@ -6,6 +6,7 @@ import android.util.Log;
 import com.lunacygames.thelastarmada.gamemap.MapLoader;
 import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.glengine.Camera;
+import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
@@ -71,7 +72,10 @@ public class SaveFileHandler {
             /* then the current map */
             fOut.write("0\n");
             /* then, the game status */
-            fOut.write("0");
+            fOut.write("0\n");
+            /* then, the inventory list */
+            for(int i = 0; i < Inventory.MAX_ITEM_NUMBER; i++)
+                fOut.write("5\n");
             /* lastly, close the file */
             fOut.close();
         } catch (FileNotFoundException e) {
@@ -112,7 +116,11 @@ public class SaveFileHandler {
                     break;
             }
             /* then the game status */
-            fOut.write(Integer.toString(GameState.getGameFlags()));
+            fOut.write(Integer.toString(GameState.getGameFlags()) + "\n");
+            /* then, the item list */
+            for(int i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {
+                fOut.write(Inventory.getItemCount(i) + "\n");
+            }
             /* finally close the file */
             fOut.close();
         } catch (FileNotFoundException e) {
@@ -124,7 +132,7 @@ public class SaveFileHandler {
 
     /**
      * Load the current save file. The player list must be pre-populated before this function
-     * is called. The file must also exist.
+     * is called. The item list must be initialized. The file must also exist.
      *
      * @param context   Application context.
      */
@@ -158,6 +166,12 @@ public class SaveFileHandler {
             /* game status */
             s = fileIn.readLine();
             GameState.setGameFlags(Integer.parseInt(s));
+            /* the rest is the inventory list */
+            for(i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {
+                s = fileIn.readLine();
+                Inventory.setItemCount(i, Integer.parseInt(s));
+            }
+
             /* done loading, close file */
             fileIn.close();
         } catch (FileNotFoundException e) {
