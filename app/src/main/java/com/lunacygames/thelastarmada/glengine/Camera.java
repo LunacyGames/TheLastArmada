@@ -11,6 +11,7 @@ public class Camera {
     private static float[] pan;
     private static float[] oldPan;
     private static float[] panMax;
+    private static int[] position;
 
     public static void setMaxPan(float[] max) {
         float x, y;
@@ -107,5 +108,13 @@ public class Camera {
                 }
                 break;
         }
+    }
+
+    public static void setPosition(int[] position) {
+        Camera.position = position;
+    }
+
+    public static int[] getPosition() {
+        return position;
     }
 }

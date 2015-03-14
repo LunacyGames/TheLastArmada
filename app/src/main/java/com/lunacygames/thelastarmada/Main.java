@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
+import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.glengine.GameSurface;
 
 public class Main extends Activity {
@@ -40,6 +41,12 @@ public class Main extends Activity {
         PlatformData.setScreenWidth(size.x);
         /* initial game state */
         GameState.setGameState(GameStateList.INIT);
+        /* save file */
+        if(!SaveFileHandler.saveExists(this)) {
+            Log.d("Main: ", "no save file found. Creating one.");
+            SaveFileHandler.createStockSaveFile(this);
+        }
+
 
 
         surface = new GameSurface(this);

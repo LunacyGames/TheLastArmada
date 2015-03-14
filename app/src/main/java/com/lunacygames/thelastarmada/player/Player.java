@@ -39,7 +39,7 @@ public class Player {
      *
      *
      */
-    public Player(String name, ArrayList<int[]> texture, int exp, int level) {
+    public Player(String name, ArrayList<int[]> texture) {
         this.magic = new ArrayList<Magic>();
         this.name = name;
         this.texture = new ArrayList<>(texture);
@@ -162,5 +162,29 @@ public class Player {
             }
         }
         exp = netGain;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
+    public int[] getBaseStats() {
+        return base_stats;
+    }
+
+    public int[] getMaxStats() {
+        return max_stats;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getExp() {
+        return exp;
     }
 }

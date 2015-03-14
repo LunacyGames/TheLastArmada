@@ -28,11 +28,6 @@ public class PlayerList {
         int[] texture;
         Bitmap bmp;
         /* base stats */
-        int[][] base_stats = {
-                {30, 4, 4, 6, 2, 5},
-                {28, 5, 5, 5, 2, 6},
-                {25, 4, 6, 3, 6, 7},
-                {22, 4, 6, 3, 8, 8}};
 
         int[][] growth_rate = {
                 {5, 4, 3, 1, 2, 2},
@@ -58,11 +53,7 @@ public class PlayerList {
             texture = TextureHandler.createTexture(bmp, gl);
             textureList = new ArrayList<>();
             textureList.add(texture);
-            Player p = new Player(names[i], textureList, 0, 1);
-            for(int j = 0; j < base_stats[i].length; j++)
-                Log.d("Player: ", "adding base stat " + i + " " + base_stats[i][j]);
-            p.setBaseStats(base_stats[i]);
-            p.setMaxStats(base_stats[i]);
+            Player p = new Player(names[i], textureList);
             p.setGrowthRate(growth_rate[i]);
             p.setGrowthPercent(growth_percent[i]);
             players.add(p);

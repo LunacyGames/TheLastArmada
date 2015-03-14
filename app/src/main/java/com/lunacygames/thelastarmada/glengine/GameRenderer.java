@@ -20,6 +20,7 @@ import com.lunacygames.thelastarmada.gameui.UIHandler;
 import com.lunacygames.thelastarmada.gameui.UIList;
 import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
+import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
@@ -109,6 +110,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
                 /* initialize the players */
                 PlayerList.initPlayerList(context, gl);
+                /* load save file */
+                SaveFileHandler.loadSaveFile(this.context);
                 GameState.setGameState(GameStateList.TITLE_SCREEN);
                 break;
             case TITLE_SCREEN:

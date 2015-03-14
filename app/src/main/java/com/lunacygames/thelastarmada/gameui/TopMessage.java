@@ -31,12 +31,16 @@ public class TopMessage {
             1.0f, 1.0f
     };
 
+    /* set the message to show on the screen */
     public static void showMessage(String msg) {
         message = msg;
         shown = true;
         counter = 60;
     }
 
+    /**
+     * Setup the message bar
+     */
     public static void setup() {
         int height = PlatformData.getScreenHeight();
         int width = PlatformData.getScreenWidth();
@@ -70,11 +74,13 @@ public class TopMessage {
         int height = PlatformData.getScreenHeight();
         int width = PlatformData.getScreenWidth();
 
+        /* need to deallocate old texture */
         if(texture != null) {
             gl.glDeleteTextures(1, texture, 0);
             gl.glFlush();
         }
 
+        /* before making a new one */
         texture =
                 TextureHandler.createTextureFromString(gl, message, (int)(0.05 * height),
                         width, TextureHandler.TextAlign.ALIGN_CENTER);
@@ -106,12 +112,19 @@ public class TopMessage {
         gl.glPopMatrix();
     }
 
+    /**
+     * Handle motion event. After timeout, if we depress the screen, hide the message bar.
+     * @param e     Motion event.
+     */
     public static void onMotionEvent(MotionEvent e) {
-        Log.d("TopMessage: ", "motionEvent");
         if(counter > 0) return;
-        else shown = false;
+        else if(e.getAction() == MotionEvent.ACTION_UP) shown = false;
     }
 
+    /**
+     * Returns whether the message bar is active or not.
+     * @return Returns true if the message bar is visible, false otherwise.
+     */
     public static boolean isShown() {
         return shown;
     }
