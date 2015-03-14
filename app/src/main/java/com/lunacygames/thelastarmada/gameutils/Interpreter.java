@@ -114,6 +114,9 @@ public class Interpreter {
                 if(target > 3) {
                     if(hp == 0) {
                         Enemy.reduceEnemyCount();
+                        if(Enemy.getEnemyList().get(target - 4).getHp() == 0)
+                            for(String s: Enemy.getEnemyList().get(target - 4).getOnDefeatScript())
+                                Interpreter.doCommand(cmd);
                     }
                     Enemy.getEnemyList().get(target - 4).setHp(hp);
                 } else {
@@ -124,7 +127,7 @@ public class Interpreter {
                 }
 
                 TopMessage.showMessage(targetName + " was dealt " +
-                        Integer.toString(damage) + " damage by Aslaugh!");
+                        Integer.toString(damage) + " damage by Aslaug!");
             } else {
                 /* offensive spell */
                 int defence;
@@ -180,7 +183,7 @@ public class Interpreter {
                     PlayerList.getPlayerList().get(target).setHp(hp);
                 }
                 message = targetName + " was dealt " + Integer.toString(damage)
-                        + " by " + sourceName + "!";
+                        + " damage by " + sourceName + "!";
                 /* additional spell effects */
                 if(spell == 'F') {
                     if(r.nextFloat() <= 0.15f) {

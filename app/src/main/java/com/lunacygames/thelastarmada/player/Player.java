@@ -158,7 +158,12 @@ public class Player {
             /* on level up, we increase stats according to their growth rates and percents */
             for(int i = 0; i < 6; i++) {
                 if(rng.nextDouble() < growth_percent[i])
+                    /* if the Random Number Goddess favours the player,
+                     * they get a nice stat boost */
                     max_stats[i] += growth_rate[i];
+                else
+                    /* otherwise, we are still nice to them, and give them a minor boost */
+                    max_stats[i] += 1;
             }
         }
         exp = netGain;
