@@ -96,7 +96,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
                 int[] title = TextureHandler.createTexture(bitmap, gl);
                 float size[] =
-                        {bitmap.getWidth(), bitmap.getHeight()};
+                        {2 * PlatformData.getScreenWidth(),
+                                2 * bitmap.getHeight() * PlatformData.getScreenWidth()
+                                        /(float) bitmap.getWidth()};
                 Camera.setMaxPan(size);
                 Camera.setDefaultPan();
                 pan_direction = 0;

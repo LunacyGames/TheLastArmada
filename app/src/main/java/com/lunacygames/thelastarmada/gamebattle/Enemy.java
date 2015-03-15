@@ -25,7 +25,7 @@ public class Enemy {
 
     private int[] texture;
     private ArrayList<String> actionList;
-    private float[] size;
+    private float scale;
     private ArrayList<String> ondefeat;
 
     private String name;
@@ -36,6 +36,8 @@ public class Enemy {
     private int def;
     private int res;
     private int spd;
+
+    private float aspectRatio;
 
     private int max_hp;
     private int max_atk;
@@ -57,13 +59,11 @@ public class Enemy {
             /* enemy sprite */
             s = read.readLine();
             Bitmap bmp = TextureHandler.loadBitmap(context, s);
+            aspectRatio = (float)bmp.getWidth()/(float)bmp.getHeight();
             texture = TextureHandler.createTexture(bmp, gl);
-            /* size */
+            /* scale */
             s = read.readLine();
-            String[] split = s.split(",");
-            this.size = new float[2];
-            this.size[0] = Float.parseFloat(split[0]);
-            this.size[1] = Float.parseFloat(split[1]);
+            this.scale = Float.parseFloat(s);
 
             /* available actions */
             s = read.readLine();
@@ -126,8 +126,10 @@ public class Enemy {
         return activeEnemies;
     }
 
-    public float[] getSize() {
-        return this.size;
+    public float[] getScale() {
+        float[] f = new float[]{scale, scale / aspectRatio};
+        Log.d("Enemy: ", "Scaled to " + f[0] + "x"+ f[1]);
+        return f;
     }
 
     public String getName() {

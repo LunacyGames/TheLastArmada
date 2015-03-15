@@ -64,6 +64,8 @@ public class PlayerList {
         for(Magic m : b_spell)
             players.get(2).addMagic(m);
 
+        players.get(0).addMagic(a_spell[0]);
+
         loadPlayerSprite(context, gl);
         PlayerList.state = PlayerState.IDLE;
     }

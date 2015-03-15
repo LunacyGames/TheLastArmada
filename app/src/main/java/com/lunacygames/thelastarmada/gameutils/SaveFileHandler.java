@@ -51,7 +51,8 @@ public class SaveFileHandler {
      */
     public static void createStockSaveFile(Context context) {
         int[][] baseStats = {
-                {30, 4, 4, 6, 2, 5},        /* Lothbrok */
+                /* HP, ATK, DEF, MAG, RES, SPD */
+                {30, 6, 4, 4, 2, 5},        /* Lothbrok */
                 {28, 5, 5, 5, 2, 6},        /* Sigurd */
                 {25, 4, 6, 3, 6, 7},        /* Brynhild */
                 {22, 4, 6, 3, 8, 8}};       /* Aslaug */
@@ -75,7 +76,7 @@ public class SaveFileHandler {
             fOut.write("0\n");
             /* then, the inventory list */
             for(int i = 0; i < Inventory.MAX_ITEM_NUMBER; i++)
-                fOut.write("5\n");
+                fOut.write("0\n");
             /* lastly, close the file */
             fOut.close();
         } catch (FileNotFoundException e) {
@@ -169,6 +170,7 @@ public class SaveFileHandler {
             /* the rest is the inventory list */
             for(i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {
                 s = fileIn.readLine();
+                Log.d("LoadSave: ", "Inventory " + i + " " + s);
                 Inventory.setItemCount(i, Integer.parseInt(s));
             }
 

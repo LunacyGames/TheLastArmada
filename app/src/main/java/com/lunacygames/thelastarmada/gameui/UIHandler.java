@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import com.lunacygames.thelastarmada.glengine.Camera;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
+import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Magic;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.player.Player;
@@ -37,6 +38,8 @@ public class UIHandler {
 
     public static final int DEFAULT_TAG = 1000;
     public static final int SPELL_TAG = 30;
+    public static final int INVENTORY_TAG = 40;
+    public static final int BACK_BUTTON_TAG = 50;
     public static final int ACTION_MENU_TAG = 10;
     public static final int HP_LIST_TAG = 20;
 
@@ -193,7 +196,6 @@ public class UIHandler {
 
 
         /* characters */
-        /* TODO: scale */
         size = new float[]{0.1f * w, 0.1f * w};
         float[] position = {
                 0.50f * w, 0.60f * h,
@@ -209,7 +211,6 @@ public class UIHandler {
                     size, new UICallback() {
                 @Override
                 public void onMotionEvent(MotionEvent e, UIWidget w) {
-                    Log.d("UIHandler: ", "clicked player " + w.getTag());
                     if(e.getAction() != MotionEvent.ACTION_UP) return;
                     if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                         currentAction.setTarget(w.getTag());
@@ -222,18 +223,17 @@ public class UIHandler {
         }
 
         /* enemies */
-        /*TODO: scale sprite? */
         xpos = 0;
         for(Enemy e : Enemy.getEnemyList()) {
             texture = e.getTexture();
+            /* enemy is scaled with respect to player as specified in enemy description file */
             size = new float[2];
-            size[0] = e.getSize()[0];
-            size[1] = e.getSize()[1];
+            size[0] = 0.1f * w * e.getScale()[0];
+            size[1] = 0.1f * w * e.getScale()[1];
             widget = new UIWidget(e.getName(), texture, tag, xpos, .7f * h - size[1], size,
                     new UICallback() {
                         @Override
                         public void onMotionEvent(MotionEvent e, UIWidget w) {
-                            Log.d("UIHandler: ", "Enemy clicked: " + w.getTag());
                             if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                                 currentAction.setTarget(w.getTag());
                                 BattleManager.updateState(0, currentAction);
@@ -246,7 +246,7 @@ public class UIHandler {
 
 
             size = new float[2];
-            size[0] = e.getSize()[0];
+            size[0] = 0.1f * w * e.getScale()[0];
             size[1] = 0.05f * h;
             widget = new UIWidget(e.getName() + "_lbl", texture, tag,
                     xpos, .75f * h - size[1], size , null);
@@ -297,7 +297,8 @@ public class UIHandler {
                                                 .get(PlayerList.getPlayer()).getSpd();
                                 currentAction.setPlayerSpeed(speed);
                                 BattleManager.updateState(1, null);
-                                UIHandler.hideWidgetByTag(10);
+                                UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
+                                UIHandler.showWidgetByTag(BACK_BUTTON_TAG);
                             }
                         }
                     }
@@ -331,12 +332,13 @@ public class UIHandler {
                             BattleManager.updateState(2, null);
                             UIHandler.showWidgetByTag(SPELL_TAG + PlayerList.getPlayer());
                             UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
+                            UIHandler.showWidgetByTag(BACK_BUTTON_TAG);
                         }
                     }
                 });
         ui.add(widget);
 
-                    /* the item button */
+        /* the item button */
         texture = TextureHandler.createTextureFromString(gl, "Item", (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widget = new UIWidget("Item", texture, ACTION_MENU_TAG, w - size[0], 0.8f * h, size,
@@ -353,7 +355,8 @@ public class UIHandler {
 
                             BattleManager.updateState(3, null);
                             UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
-                            /* TODO: item related stuff here */
+                            UIHandler.showWidgetByTag(INVENTORY_TAG);
+                            UIHandler.showWidgetByTag(BACK_BUTTON_TAG);
                         }
                     }
                 });
@@ -378,31 +381,103 @@ public class UIHandler {
 
         /* magic menu */
         size = new float[]{0.2f * w, 0.1f * h};
-        for(int i = 2; i < 4; i++) {
+        int i = 0;
+        for(Player p : PlayerList.getPlayerList()) {
             int j = 1;
-            for(Magic m : PlayerList.getPlayerList().get(i).getMagicList()) {
-                            /* we generate menu entries depending on the spell list */
-                texture = TextureHandler.createTextureFromString(gl, m.getName(),
-                        (int) size[1], (int) size[0], TextureHandler.TextAlign.ALIGN_LEFT);
-                widget = new UIWidget(m.getEffect(), texture, SPELL_TAG + i,
-                        w - j * size[0], 0.9f * h, size, new UICallback() {
+            /* check if player has any spells */
+            if(p.hasMagic()) {
+                /* if it does, create its menu */
+                for(Magic m : p.getMagicList()) {
+                    /* we generate menu entries depending on the spell list */
+                    texture = TextureHandler.createTextureFromString(gl, m.getName(),
+                            (int) size[1], (int) size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+
+                    widget = new UIWidget(m.getEffect(), texture, SPELL_TAG + i,
+                            w - j * size[0], 0.9f * h, size,
+                            new UICallback() {
+                                @Override
+                                public void onMotionEvent(MotionEvent e, UIWidget w) {
+                                    Log.d("UIHandler", "clicked " + w.getCaption());
+                                    if(e.getAction() != MotionEvent.ACTION_UP) return;
+                                    /* failsafe if we are not selecting magic */
+                                    if(BattleManager.getState() != BattleState.SELECT_MAGIC) return;
+                                    currentAction.setExtraParameter(w.getCaption());
+                                    for(int i = 0; i < PlayerList.getPlayerList().size(); i++)
+                                        UIHandler.hideWidgetByTag(SPELL_TAG + i);
+
+                                    BattleManager.updateState(0, null);
+                                }
+                    });
+                    widget.setVisible(false);
+                    ui.add(widget);
+                    j++;
+                }
+            }
+            i++;
+        }
+
+        /* items menu */
+        size = new float[]{0.25f * w, 0.1f * h};
+        xpos = 0.75f * w;
+        for(i = Inventory.MAX_ITEM_NUMBER - 1; i >= 0; i--) {
+            texture = TextureHandler.createTextureFromString(gl, Inventory.getItemName(i),
+                    (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+
+            widget = new UIWidget(Integer.toString(i), texture, INVENTORY_TAG,
+                    xpos, 0.9f * h, size, new UICallback() {
+                @Override
+                public void onMotionEvent(MotionEvent e, UIWidget w) {
+                    /* Need to check we are depressing the button */
+                    if(e.getAction() != MotionEvent.ACTION_UP) return;
+                    /* Failsafe for incorrect action */
+                    if(BattleManager.getState() != BattleState.SELECT_ITEM) return;
+                    /* Hack: we put the item ID on the caption */
+                    int item = Integer.parseInt(w.getCaption());
+                    /* Ensure we have the item */
+                    if(Inventory.getItemCount(item) == 0) {
+                        TopMessage.showMessage("You have no more "
+                                + Inventory.getItemName(item)+ "s!");
+                        return;
+                    }
+                    Inventory.decrementItemCount(item);
+                    currentAction.setExtraParameter(w.getCaption() + ",");
+                    UIHandler.hideWidgetByTag(INVENTORY_TAG);
+                    BattleManager.updateState(0, null);
+                }
+            });
+            widget.setVisible(false);
+            ui.add(widget);
+            xpos -= 0.25f * w;
+        }
+
+        /* back button, we only allow to revert current player's actions */
+        size = new float[]{0.15f * w, 0.1f * h};
+        texture = TextureHandler.createTextureFromString(gl, "Back", (int)size[1], (int)size[0],
+                TextureHandler.TextAlign.ALIGN_LEFT);
+        widget = new UIWidget("Back", texture, BACK_BUTTON_TAG, 0.85f* w, 0, size,
+                new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        Log.d("UIHandler", "clicked " + w.getCaption());
                         if(e.getAction() != MotionEvent.ACTION_UP) return;
-                        /* failsafe if we are not selecting magic */
-                        if(BattleManager.getState() != BattleState.SELECT_MAGIC) return;
-                        currentAction.append(w.getCaption());
-                        UIHandler.hideWidgetByTag(SPELL_TAG + 2);
-                        UIHandler.hideWidgetByTag(SPELL_TAG + 3);
-                        BattleManager.updateState(0, null);
+                        BattleState s = BattleManager.revertAction();
+                        switch(s) {
+                            case SELECT_MAGIC:
+                                UIHandler.showWidgetByTag(SPELL_TAG + PlayerList.getPlayer());
+                                break;
+                            case SELECT_ITEM:
+                                UIHandler.showWidgetByTag(INVENTORY_TAG);
+                                break;
+                            case SELECT_ACTION:
+                                UIHandler.showWidgetByTag(ACTION_MENU_TAG);
+                                UIHandler.hideWidgetByTag(INVENTORY_TAG);
+                                UIHandler.hideWidgetByTag(SPELL_TAG + PlayerList.getPlayer());
+                                UIHandler.hideWidgetByTag(BACK_BUTTON_TAG);
+                                break;
+                        }
                     }
                 });
-                widget.setVisible(false);
-                ui.add(widget);
-                j++;
-            }
-        }
+        widget.setVisible(false);
+        ui.add(widget);
     }
 
     private static void uiCreateStart(Context context, GL10 gl) {

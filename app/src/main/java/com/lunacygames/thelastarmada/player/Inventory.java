@@ -22,9 +22,9 @@ public class Inventory {
             case 1:
                 return "Concoction";
             case 2:
-                return "Vial of Force";
+                return "Force Vial";
             case 3:
-                return "Vial of Mana";
+                return "Mana Vial";
         }
         return null;
     }
@@ -34,7 +34,7 @@ public class Inventory {
      * @param itemID
      * @return
      */
-    public String getItemEffect(int itemID) {
+    public static String getItemEffect(int itemID) {
         switch(itemID) {
             case 0:
                 return "HPI20";

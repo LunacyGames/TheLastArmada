@@ -106,6 +106,7 @@ public class TextureHandler {
      */
     public static int[] createTextureFromString(GL10 gl,
                                               String str, int height, int width, TextAlign align) {
+        int txtHeight;
         /* create a bitmap */
         Bitmap.Config config = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(width, height, config);
@@ -119,6 +120,8 @@ public class TextureHandler {
         paint.setTextSize((int)(0.75*(height - 4)));
 
         /* get bounds of text box */
+        paint.getTextBounds("a", 0, 1, bounds);
+        txtHeight = bounds.height();
         paint.getTextBounds(str, 0, str.length(), bounds);
         /* set canvas background */
         canvas.drawColor(WidgetColor);
@@ -126,17 +129,18 @@ public class TextureHandler {
         /* and draw text */
         switch(align) {
             case ALIGN_LEFT:
-                canvas.drawText(str, 4, (height + bounds.height()) / 2, paint);
+                canvas.drawText(str, 4, (height + txtHeight) / 2, paint);
                 break;
             case ALIGN_RIGHT:
                 canvas.drawText(str, width - bounds.width() - 4,
-                        (height + bounds.height()) / 2, paint);
+                        (height + txtHeight) / 2, paint);
                 break;
             case ALIGN_CENTER:
                 canvas.drawText(str, (width - bounds.width() - 4)/2,
-                        (height + bounds.height()) / 2, paint);
+                        (height + txtHeight) / 2, paint);
                 break;
         }
+
         /* return the texture generated from the bitmap */
         return createTexture(bmp, gl);
     }

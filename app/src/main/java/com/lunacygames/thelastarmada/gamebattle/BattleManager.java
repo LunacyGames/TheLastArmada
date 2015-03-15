@@ -8,6 +8,7 @@ import com.lunacygames.thelastarmada.player.PlayerList;
 import com.lunacygames.thelastarmada.gameui.UIHandler;
 
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * Created by zeus on 3/11/15.
@@ -15,6 +16,8 @@ import java.util.Random;
 public class BattleManager {
     private static BattleState state;
     private static boolean mandatory;
+    private static Stack<BattleState> stateStack;
+
 
     public static void reset() {
         state = BattleState.START;
@@ -29,10 +32,12 @@ public class BattleManager {
             case START:
                 Log.d("BattleManager: ", "Switching to SELECT_ACTION");
                 /* ensure the menu is visible */
-                UIHandler.showWidgetByTag(10);
+                UIHandler.showWidgetByTag(UIHandler.ACTION_MENU_TAG);
                 state = BattleState.SELECT_ACTION;
                 break;
             case SELECT_ACTION:
+                stateStack = new Stack<BattleState>();
+                stateStack.push(state);
                 if(key == 1) {
                     Log.d("BattleManager: ", "Switching to SELECT_TARGET");
                     state = BattleState.SELECT_TARGET;
@@ -45,9 +50,12 @@ public class BattleManager {
                 }
                 break;
             case SELECT_MAGIC:
+                stateStack.push(state);
                 state = BattleState.SELECT_TARGET;
                 break;
             case SELECT_ITEM:
+                stateStack.push(state);
+                state = BattleState.SELECT_TARGET;
                 break;
             case SELECT_TARGET:
                 Log.d("BattleManager: ", "Switching to ADD_PLAYER_ACTION");
@@ -78,6 +86,7 @@ public class BattleManager {
                     /* ensure the menu is visible */
                     UIHandler.showWidgetByTag(UIHandler.ACTION_MENU_TAG);
                 }
+                UIHandler.hideWidgetByTag(UIHandler.BACK_BUTTON_TAG);
                 break;
             case PROCESS_ACTION_QUEUE:
                 state = BattleState.SELECT_ACTION;
@@ -98,5 +107,11 @@ public class BattleManager {
 
     public static boolean isMandatory() {
         return mandatory;
+    }
+
+    public static BattleState revertAction() {
+        BattleState s = stateStack.pop();
+        state = s;
+        return s;
     }
 }

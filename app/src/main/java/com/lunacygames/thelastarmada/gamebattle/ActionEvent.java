@@ -10,6 +10,7 @@ import java.util.PriorityQueue;
  */
 public class ActionEvent {
     private String event;
+    private String parameter;
     private int player;
     private int target;
     private int speed;
@@ -19,6 +20,7 @@ public class ActionEvent {
 
     public ActionEvent(String event) {
         this.event = event;
+        this.parameter = "";
     }
 
     public static void emptyActionQueue() {
@@ -66,7 +68,7 @@ public class ActionEvent {
 
     @Override
     public String toString() {
-        return event + "" + player + "," + target;
+        return event + parameter + Integer.toString(player) + "," + Integer.toString(target);
     }
 
     public static ActionEvent getAction() {
@@ -77,7 +79,7 @@ public class ActionEvent {
         return eventList.isEmpty();
     }
 
-    public void append(String a) {
-        this.event += a;
+    public void setExtraParameter(String a) {
+        this.parameter = a;
     }
 }
