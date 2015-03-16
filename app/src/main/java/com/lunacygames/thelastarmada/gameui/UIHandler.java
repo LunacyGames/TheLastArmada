@@ -41,6 +41,18 @@ public class UIHandler {
     public static final int HP_LIST_TAG = 20;
 
     private static ActionEvent currentAction;
+    private static float glow = 1.0f;
+    private static float glowDir = 1.0f;
+    private static int counter = 0;
+
+    public static void changeDir() {
+        glowDir = -glowDir;
+    }
+
+    public static void resetGlow() {
+        glow = 1.0f;
+        glowDir = 1.0f;
+    }
 
     public static void loadUI(final Context context, final GL10 gl) {
         Log.d("loadUI:", "Loading UI with state: " + GameState.getGameState());
@@ -210,6 +222,7 @@ public class UIHandler {
                     if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                         currentAction.setTarget(w.getTag());
                         BattleManager.updateState(0, currentAction);
+                        UIHandler.resetGlow();
                     }
                 }
             });
@@ -234,6 +247,7 @@ public class UIHandler {
                             if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                                 currentAction.setTarget(w.getTag());
                                 BattleManager.updateState(0, currentAction);
+                                UIHandler.resetGlow();
                             }
                         }
                     });
@@ -450,8 +464,29 @@ public class UIHandler {
         int width = PlatformData.getScreenWidth();
         int height = PlatformData.getScreenHeight();
         gl.glOrthof(0.0f, width, height, 0.0f, -1.0f, 0.0f);
-        for(UIWidget widget : ui)
+        for(UIWidget widget : ui) {
+            //If the widget is player currently selecting a move, do the following
+            if(widget.getTag() == PlayerList.getPlayer()&& !TopMessage.isShown()) {
+                //Set the color, increment or decrement the RGB value,
+                // and check to see if we need to fade in or fade out.
+                gl.glColor4f(glow, glow, glow, 1f);
+                //Increment the counter( which we need so the character doesn't flash like crazy)
+                counter++;
+                //Once the counter has reached its mark, reset it, and change the glow factor.
+                if(counter == 4) {
+                    counter = 0;
+                    glow += glowDir;
+                    if (glow == 3.0f || glow == 1.0f) changeDir();
+                }
+            }
+
             widget.onDraw(gl);
+            if(widget.getTag() == PlayerList.getPlayer()) {
+                gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+            }
+
+        }
     }
 
     /**
