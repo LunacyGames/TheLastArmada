@@ -89,7 +89,7 @@ public class MapLoader {
             /* compute the maximum camera position */
             float[] cameraPan = {sizeX * horizontal, sizeX * y};
             /* set the camera position */
-            Camera.setPan(camera);
+            //Camera.setPan(camera);
             /* and compute its boundaries */
             Camera.setMaxPan(cameraPan);
         } catch (IOException e) {

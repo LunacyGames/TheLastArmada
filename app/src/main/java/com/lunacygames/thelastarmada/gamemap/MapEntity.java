@@ -60,6 +60,10 @@ public class MapEntity {
         this.y = 0;
     }
 
+    public void setTexture(int[] texture) {
+        this.textureID = texture;
+    }
+
     /**
      * Draw method
      * @param gl OpenGL ES context to use for drawing

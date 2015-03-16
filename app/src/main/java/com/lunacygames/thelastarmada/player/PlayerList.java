@@ -21,14 +21,20 @@ public class PlayerList {
     private static ArrayList<Player> players;
     static MapEntity m;
     private static int player;
+    private static int frameCount = 0;
+    private static int currentFrame = 0;
+    private static ArrayList<int[]> textures;
+    private static int frameOffset = 0;
+
 
     public static void initPlayerList(Context context, GL10 gl) {
         players = new ArrayList<Player>();
+        textures = new ArrayList<int[]>();
         String[] names = { "Lothbrok", "Sigurd", "Brynhild", "Aslaug"};
         int[] texture;
         Bitmap bmp;
-        /* base stats */
 
+        /* base stats */
         int[][] growth_rate = {
                 {5, 4, 3, 1, 2, 2},
                 {4, 3, 3, 1, 3, 3},
@@ -73,7 +79,6 @@ public class PlayerList {
     public static void loadPlayerSprite(Context context, GL10 gl) {
         Bitmap bmp = TextureHandler.loadBitmap(context, "characters/lothbrok.png");
         ArrayList<Bitmap> sprites = TextureHandler.loadTiles(bmp, 4, 3);
-        ArrayList<int[]> textures = new ArrayList<int[]>();
         for(Bitmap b : sprites) {
             textures.add(TextureHandler.createTexture(b, gl));
         }
@@ -93,9 +98,41 @@ public class PlayerList {
         /* load an identity matrix onto the stack */
         gl.glPushMatrix();
         gl.glLoadIdentity();
+
+        m.setTexture(textures.get(currentFrame + frameOffset));
+
+        /* count frame */
+        if(state != PlayerState.IDLE)
+            frameCount++;
+        else
+            frameCount = 0;
+
+        if(frameCount == 3) {
+            frameCount = 0;
+            currentFrame--;
+            if(currentFrame < 0) currentFrame = 2;
+        }
+
+        switch(state) {
+            case IDLE:
+                break;
+            case WALK_NORTH:
+                frameOffset = 9;
+                break;
+            case WALK_SOUTH:
+                frameOffset = 0;
+                break;
+            case WALK_EAST:
+                frameOffset = 3;
+                break;
+            case WALK_WEST:
+                frameOffset = 6;
+                break;
+        }
+
         m.onDraw(gl);
-        gl.glPopMatrix();
         /* and pop it back out */
+        gl.glPopMatrix();
     }
 
     public static void setPlayer(int p) {

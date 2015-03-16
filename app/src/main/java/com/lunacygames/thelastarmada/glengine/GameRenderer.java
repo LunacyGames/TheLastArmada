@@ -42,6 +42,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private long seconds;
     Time c;
     private int pan_direction;
+    private float[] camera;
 
     public GameRenderer(Context context) {
         this.context = context;
@@ -100,7 +101,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                                 2 * bitmap.getHeight() * PlatformData.getScreenWidth()
                                         /(float) bitmap.getWidth()};
                 Camera.setMaxPan(size);
-                Camera.setDefaultPan();
+                // Camera.setDefaultPan();
+                camera = new float[]{0, 0};
                 pan_direction = 0;
                 /* we need the background to scroll, so we make it a map entity */
                 MapEntity m = new MapEntity(title, 0, 0, size);
@@ -161,7 +163,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         /* redraw background */
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-        float[] camera = Camera.getPan();
+
 
         switch(GameState.getGameState()) {
             case TITLE_SCREEN: {
@@ -197,13 +199,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                         }
                     break;
                 }
-                Camera.setPan(camera);
+                //Camera.setPan(camera);
             }
 
         }
 
         /* if we are in the overworld, position the camera on top of the player */
         if(GameState.getGameState() == GameStateList.OVERWORLD) {
+            camera = Camera.getPan();
             gl.glTranslatef(-camera[0], -camera[1], 0.0f);
             Camera.update();
         }

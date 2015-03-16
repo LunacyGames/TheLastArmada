@@ -69,7 +69,7 @@ public class SaveFileHandler {
                 fOut.write("0\n");    /* experience */
             }
             /* then the current position */
-            fOut.write("6,6\n");
+            fOut.write("5,5\n");
             /* then the current map */
             fOut.write("0\n");
             /* then, the game status */

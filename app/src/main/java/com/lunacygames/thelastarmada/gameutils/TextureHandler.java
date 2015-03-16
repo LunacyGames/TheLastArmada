@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.opengl.GLUtils;
 
 import java.io.IOException;
@@ -107,6 +108,8 @@ public class TextureHandler {
     public static int[] createTextureFromString(GL10 gl,
                                               String str, int height, int width, TextAlign align) {
         int txtHeight;
+        /* typeface */
+        Typeface tf = Typeface.create("sans-serif-smallcaps", Typeface.NORMAL);
         /* create a bitmap */
         Bitmap.Config config = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(width, height, config);
@@ -118,6 +121,7 @@ public class TextureHandler {
         /* set paint properties */
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(0.75*(height - 4)));
+        paint.setTypeface(tf);
 
         /* get bounds of text box */
         paint.getTextBounds("a", 0, 1, bounds);

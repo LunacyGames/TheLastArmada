@@ -12,6 +12,8 @@ public class Camera {
     private static float[] oldPan;
     private static float[] panMax;
     private static int[] position;
+    private static int[] old_position;
+    private static float delta;
 
     public static void setMaxPan(float[] max) {
         float x, y;
@@ -27,6 +29,8 @@ public class Camera {
 
     public static void lockPan() {
         oldPan = pan.clone();
+        delta = 0;
+        old_position = position.clone();
     }
 
     public static void setDefaultPan() {
@@ -61,6 +65,7 @@ public class Camera {
                     pan[1] = oldPan[1] - sizeX;
                     PlayerList.setState(PlayerState.IDLE);
                 }
+
                 /* check whether we reached the top */
                 if(pan[1] <= 0.0f) {
                     pan[1] = 0.0f;
@@ -111,7 +116,10 @@ public class Camera {
     }
 
     public static void setPosition(int[] position) {
+        float sizeX = PlatformData.getScreenWidth() / 11.0f;
         Camera.position = position;
+        pan = new float[]{position[0] * sizeX, position[1] * sizeX};
+
     }
 
     public static int[] getPosition() {
