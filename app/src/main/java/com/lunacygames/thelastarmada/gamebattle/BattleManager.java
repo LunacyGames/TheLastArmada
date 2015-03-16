@@ -79,6 +79,7 @@ public class BattleManager {
                     }
                     Log.d("BattleManager: ", "Processing action queue");
                     state = BattleState.PROCESS_ACTION_QUEUE;
+                    UIHandler.resetGlow();
                 } else {
                     Log.d("BattleManager: ", "Players remain, switching to SELECT_ACTION");
                     PlayerList.setPlayer(player + 1);
