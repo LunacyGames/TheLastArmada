@@ -125,7 +125,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 TopMessage.setup();
                 break;
             case LOAD_MAP:
-                MapLoader.setActiveMap(MapType.OVERWORLD);
+                // MapLoader.setActiveMap(MapType.OVERWORLD);
                 map = MapLoader.loadMap(context, gl);
             case BATTLE_VICTORY:
                 /* TODO: add extra stuff, for now, fall through */
@@ -165,39 +165,39 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glLoadIdentity();
 
 
-        switch(GameState.getGameState()) {
+        switch (GameState.getGameState()) {
             case TITLE_SCREEN: {
                 float[] maxPan = Camera.getMaxPan();
                 gl.glTranslatef(-camera[0], -camera[1], 0.0f);
-                switch(pan_direction) {
+                switch (pan_direction) {
                     case 0:
-                        camera[0] += PlatformData.getScreenWidth()/100;
-                        if(camera[0] >= maxPan[0]) {
+                        camera[0] += PlatformData.getScreenWidth() / 100;
+                        if (camera[0] >= maxPan[0]) {
                             camera[0] = maxPan[0];
                             pan_direction = 1;
                         }
                         break;
                     case 1:
-                        camera[1] += PlatformData.getScreenHeight()/100;
-                        if(camera[1] >= maxPan[1]) {
+                        camera[1] += PlatformData.getScreenHeight() / 100;
+                        if (camera[1] >= maxPan[1]) {
                             camera[1] = maxPan[1];
                             pan_direction = 2;
                         }
                         break;
                     case 2:
-                        camera[0] -= PlatformData.getScreenWidth()/100;
-                        if(camera[0] <= 0) {
+                        camera[0] -= PlatformData.getScreenWidth() / 100;
+                        if (camera[0] <= 0) {
                             camera[0] = 0;
                             pan_direction = 3;
                         }
                         break;
                     default:
-                        camera[1] -= PlatformData.getScreenHeight()/100;
-                        if(camera[1] <= 0) {
+                        camera[1] -= PlatformData.getScreenHeight() / 100;
+                        if (camera[1] <= 0) {
                             camera[1] = 0;
                             pan_direction = 0;
                         }
-                    break;
+                        break;
                 }
                 //Camera.setPan(camera);
             }
@@ -205,15 +205,35 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
 
         /* if we are in the overworld, position the camera on top of the player */
-        if(GameState.getGameState() == GameStateList.OVERWORLD) {
+        if (GameState.getGameState() == GameStateList.OVERWORLD) {
             camera = Camera.getPan();
             gl.glTranslatef(-camera[0], -camera[1], 0.0f);
             Camera.update();
         }
 
+        /* cache some values */
+        int vsprites =
+                (int) Math.ceil(PlatformData.getScreenHeight() / PlatformData.getTileSize()) + 1;
+        float xpos, ypos;
+        float tilesize = PlatformData.getTileSize();
         /* render the map */
-        for(MapEntity e : map)
-            e.onDraw(gl);
+        if (GameState.getGameState() == GameStateList.OVERWORLD) {
+            for(MapEntity e : map) {
+                /* check for no sprite */
+                if (e == null) continue;
+                xpos = e.getX();
+                ypos = e.getY();
+                if (((xpos > (Camera.getPan()[0] - tilesize)
+                        && xpos < Camera.getPan()[0] + 12 * tilesize))
+                        && (ypos > Camera.getPan()[1] - tilesize)
+                        && (ypos < Camera.getPan()[1] + vsprites * tilesize))
+                    e.onDraw(gl);
+            }
+        } else {
+            for(MapEntity e : map) {
+                e.onDraw(gl);
+            }
+        }
 
         /* if on the overworld, draw the player sprite */
         if(GameState.getGameState() == GameStateList.OVERWORLD)

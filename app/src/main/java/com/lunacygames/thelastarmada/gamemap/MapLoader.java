@@ -41,6 +41,9 @@ public class MapLoader {
             case OVERWORLD:
                 csv = context.getResources().openRawResource(R.raw.map1);
                 break;
+            case DUNGEON:
+                csv = context.getResources().openRawResource(R.raw.map2);
+                break;
         }
         ArrayList<MapEntity> map = new ArrayList<MapEntity>();
         /* start reading from file, hopefully... */

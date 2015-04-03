@@ -39,6 +39,7 @@ public class Main extends Activity {
         d.getSize(size);
         PlatformData.setScreenHeight(size.y);
         PlatformData.setScreenWidth(size.x);
+        PlatformData.calculateTileSize();
         /* initial game state */
         GameState.setGameState(GameStateList.INIT);
         /* save file */

@@ -522,7 +522,7 @@ public class UIHandler {
                 if(e.getAction() == MotionEvent.ACTION_UP) {
                     Log.d("UI: ", "start pressed!");
                     GameState.setGameState(GameStateList.LOAD_MAP);
-                    MapLoader.setActiveMap(MapType.OVERWORLD);
+                    // MapLoader.setActiveMap(MapType.OVERWORLD);
                 }
             }
         });

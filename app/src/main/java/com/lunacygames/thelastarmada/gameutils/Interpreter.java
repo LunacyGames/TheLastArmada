@@ -98,7 +98,7 @@ public class Interpreter {
                 for(String s : Enemy.getEnemyList().get(target - tagOffset).getOnDefeatScript())
                     Interpreter.doCommand(s);
             } else {
-                message = targetName + " was was dealt " +
+                message = targetName + " was dealt " +
                         Integer.toString(damage) + " damage by " + sourceName + "!";
             }
             Enemy.getEnemyList().get(target - tagOffset).setHp(hp);

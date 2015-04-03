@@ -1,5 +1,10 @@
 package com.lunacygames.thelastarmada.gamemap;
 
+import com.lunacygames.thelastarmada.gameutils.GameState;
+import com.lunacygames.thelastarmada.gameutils.GameStateList;
+import com.lunacygames.thelastarmada.gameutils.PlatformData;
+import com.lunacygames.thelastarmada.glengine.Camera;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -56,8 +61,8 @@ public class MapEntity {
 
         /* store the texture ID and coordinates */
         this.textureID = textureID;
-        this.x = 0;
-        this.y = 0;
+        this.x = x;
+        this.y = y;
     }
 
     public void setTexture(int[] texture) {
@@ -69,7 +74,6 @@ public class MapEntity {
      * @param gl OpenGL ES context to use for drawing
      */
     public void onDraw(GL10 gl) {
-
         gl.glPushMatrix();
 
         /* bind texture */
@@ -93,5 +97,13 @@ public class MapEntity {
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         gl.glPopMatrix();
+    }
+
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
     }
 }

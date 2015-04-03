@@ -69,9 +69,9 @@ public class SaveFileHandler {
                 fOut.write("0\n");    /* experience */
             }
             /* then the current position */
-            fOut.write("5,5\n");
+            fOut.write("37,25\n");
             /* then the current map */
-            fOut.write("0\n");
+            fOut.write("1\n");
             /* then, the game status */
             fOut.write("0\n");
             /* then, the inventory list */
@@ -114,6 +114,9 @@ public class SaveFileHandler {
             switch(MapLoader.getActiveMap()) {
                 case OVERWORLD:
                     fOut.write("0\n");
+                    break;
+                case DUNGEON:
+                    fOut.write("1\n");
                     break;
             }
             /* then the game status */
@@ -160,6 +163,9 @@ public class SaveFileHandler {
             switch(s) {
                 case "0":
                     MapLoader.setActiveMap(MapType.OVERWORLD);
+                    break;
+                case "1":
+                    MapLoader.setActiveMap(MapType.DUNGEON);
                     break;
                 default:
                     Log.d("Loading: ", "Invalid map type");
