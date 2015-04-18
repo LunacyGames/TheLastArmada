@@ -45,16 +45,12 @@ public class UIHandler {
 
     private static ActionEvent currentAction;
     private static float glow = 1.0f;
-    private static float glowDir = 1.0f;
-    private static int counter = 0;
 
-    public static void changeDir() {
-        glowDir = -glowDir;
-    }
-
+    /**
+     * Reset the glow value for a widget.
+     */
     public static void resetGlow() {
-        glow = 1.0f;
-        glowDir = 1.0f;
+        glow = 0.0f;
     }
 
     public static void loadUI(final Context context, final GL10 gl) {
@@ -421,7 +417,7 @@ public class UIHandler {
 
                                     BattleManager.updateState(0, null);
                                 }
-                    });
+                            });
                     widget.setVisible(false);
                     ui.add(widget);
                     j++;
@@ -517,7 +513,7 @@ public class UIHandler {
         x = (w - size[0])/2;
         y = 0.8f * h;
         texture = TextureHandler.createTextureFromString(gl, "Start", (int)size[1],
-                        (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+                (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
         /* and add it to the UI */
         Log.d("loadUI: ", "Placing start button at " + x + ", " + y);
         widget = new UIWidget("Start", texture, DEFAULT_TAG, x, y, size, new UICallback() {
@@ -526,7 +522,7 @@ public class UIHandler {
                 if(e.getAction() == MotionEvent.ACTION_UP) {
                     Log.d("UI: ", "start pressed!");
                     GameState.setGameState(GameStateList.LOAD_MAP);
-                    MapLoader.setActiveMap(MapType.OVERWORLD);
+                    // MapLoader.setActiveMap(MapType.OVERWORLD);
                 }
             }
         });
@@ -543,22 +539,18 @@ public class UIHandler {
         int height = PlatformData.getScreenHeight();
         gl.glOrthof(0.0f, width, height, 0.0f, -1.0f, 0.0f);
         for(UIWidget widget : ui) {
-            //If the widget is player currently selecting a move, do the following
-            if(widget.getTag() == PlayerList.getPlayer()&& !TopMessage.isShown()) {
-                //Set the color, increment or decrement the RGB value,
-                // and check to see if we need to fade in or fade out.
-                gl.glColor4f(glow, glow, glow, 1f);
-                //Increment the counter( which we need so the character doesn't flash like crazy)
-                counter++;
-                //Once the counter has reached its mark, reset it, and change the glow factor.
-                if(counter == 4) {
-                    counter = 0;
-                    glow += glowDir;
-                    if (glow == 3.0f || glow == 1.0f) changeDir();
-                }
+            /* if the current widget is a character selecting an action */
+            if(widget.getTag() == PlayerList.getPlayer() && !TopMessage.isShown()) {
+                /* compute glow parameter */
+                float glowfctn = 1.5f - 0.5f*(float)Math.cos(glow);
+                /* and set it */
+                gl.glColor4f(glowfctn, glowfctn, glowfctn, 1f);
+                /* increment glow counter */
+                glow += Math.PI/10;
             }
 
             widget.onDraw(gl);
+            /* further, reset the glow if necessary */
             if(widget.getTag() == PlayerList.getPlayer()) {
                 gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
