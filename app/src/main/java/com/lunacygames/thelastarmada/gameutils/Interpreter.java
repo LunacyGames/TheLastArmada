@@ -7,6 +7,7 @@ import com.lunacygames.thelastarmada.gamebattle.BattleManager;
 import com.lunacygames.thelastarmada.gamebattle.BattleState;
 import com.lunacygames.thelastarmada.gamebattle.Enemy;
 import com.lunacygames.thelastarmada.gameui.TopMessage;
+import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
@@ -81,7 +82,9 @@ public class Interpreter {
             GameState.setGameState(GameStateList.TO_BATTLE_EFFECT);
         } else if(split[0].equalsIgnoreCase("SAY")) {
             TopMessage.showMessage(split[1]);
-        } else {
+        } else if(split[0].equalsIgnoreCase("ITM")) {
+            processItem(split[1]);
+        }else{
             Log.e("Interpreter: ", "bad command " + cmd);
         }
     }
@@ -361,5 +364,88 @@ public class Interpreter {
             }
             TopMessage.showMessage(message);
         }
+    }
+
+    private static void processItem(String cmd){
+
+        String[] args;
+        int source, target, itemNumber, effectSize;
+        int hp, str, mag;
+        String targetName, sourceName, itemName, itemEffect;
+
+        args = cmd.split(",");
+
+        /*The number identifier for item we have, the source
+        of our potion, and the target.
+         */
+        itemNumber = Integer.parseInt(args[0]);
+        source = Integer.parseInt(args[1]);
+        target = Integer.parseInt(args[2]);
+
+        /*The name of the item, the effect of the item,
+        and the number of points the item effect casts.
+         */
+        itemName = Inventory.getItemName(itemNumber);
+        itemEffect = Inventory.getItemEffect(itemNumber);
+        effectSize = Integer.parseInt(itemEffect.substring(3));
+
+        /*Name of our daring, somewhat desperate adventurer*/
+        sourceName = PlayerList.getPlayerList().get(source).getName();
+
+        int tagOffset = PlayerList.getPlayerList().size();
+
+        if(target >= tagOffset) {
+            Random rng = new Random();  /* the random number goddess */
+            /* target was an enemy */
+            if(Enemy.getActiveEnemies() == 0) return;
+
+            /* make sure the enemy is alive */
+            while(Enemy.getEnemyList().get(target - tagOffset).getHp() == 0) {
+                /* if it isn't pick a random one */
+                target = rng.nextInt(Enemy.getEnemyList().size()) + tagOffset;
+            }
+
+            targetName = Enemy.getEnemyList().get(target - tagOffset).getName();
+        }
+        else
+            targetName = PlayerList.getPlayerList().get(target).getName();
+
+
+        /*Perform the appropriate buff depending on item name*/
+        if(itemEffect.substring(0,3).equalsIgnoreCase("HPI")){
+            if(target < tagOffset) {
+                hp = PlayerList.getPlayerList().get(target).getHp();
+                PlayerList.getPlayerList().get(target).setHp(hp + effectSize);
+            }
+            else {
+                hp = Enemy.getEnemyList().get(target - tagOffset).getHp();
+                Enemy.getEnemyList().get(target - tagOffset).setHp(hp + effectSize);
+            }
+
+        }
+        else if(itemEffect.substring(0,3).equalsIgnoreCase("STR")){
+            if(target < tagOffset) {
+                str = PlayerList.getPlayerList().get(target).getAtk();
+                PlayerList.getPlayerList().get(target).setAtk(str + effectSize);
+            }
+            else {
+                str = Enemy.getEnemyList().get(target - tagOffset).getAtk();
+                Enemy.getEnemyList().get(target - tagOffset).setAtk(str + effectSize);
+            }
+        }
+        else if(itemEffect.substring(0,3).equalsIgnoreCase("MAG")){
+            if(target < tagOffset) {
+                mag = PlayerList.getPlayerList().get(target).getSatk();
+                PlayerList.getPlayerList().get(target).setSatk(mag + effectSize);
+            }
+            else {
+                mag = Enemy.getEnemyList().get(target - tagOffset).getSatk();
+                Enemy.getEnemyList().get(target - tagOffset).setSatk(mag + effectSize);
+            }
+        }
+
+        TopMessage.showMessage(sourceName + " cast " +
+                itemName + " on " + targetName + " for " +
+                Integer.toString(effectSize) + " points!");
     }
 }
