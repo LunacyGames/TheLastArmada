@@ -1,6 +1,6 @@
 package com.lunacygames.thelastarmada.gameui;
 
-import android.util.Log;
+import android.content.Context;
 import android.view.MotionEvent;
 
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
@@ -83,7 +83,7 @@ public class TopMessage {
         text.position(0);
     }
 
-    public static void onDraw(GL10 gl) {
+    public static void onDraw(Context context, GL10 gl) {
         if(counter > 0) counter--;
         if(!shown) return;
 
@@ -98,7 +98,7 @@ public class TopMessage {
 
         /* before making a new one */
         texture =
-                TextureHandler.createTextureFromString(gl, message, (int)(0.05 * height),
+                TextureHandler.createTextureFromString(context, gl, message, (int)(0.05 * height),
                         width, TextureHandler.TextAlign.ALIGN_CENTER);
 
 

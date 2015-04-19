@@ -20,7 +20,6 @@ import com.lunacygames.thelastarmada.gamebattle.BattleManager;
 import com.lunacygames.thelastarmada.gamebattle.BattleState;
 import com.lunacygames.thelastarmada.gamebattle.Enemy;
 import com.lunacygames.thelastarmada.gamemap.MapLoader;
-import com.lunacygames.thelastarmada.gamemap.MapType;
 
 import java.util.ArrayList;
 
@@ -102,9 +101,14 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Camera.lockPan();
-                        PlayerList.setState(PlayerState.WALK_EAST);
+                        if(e.getAction() == MotionEvent.ACTION_DOWN) {
+                            if (PlayerList.getState() != PlayerState.IDLE) return;
+                            Camera.lockPan();
+                            PlayerList.setState(PlayerState.WALK_EAST);
+                            PlayerList.setPlayerWalking(true);
+                        } else if(e.getAction() == MotionEvent.ACTION_UP) {
+                            PlayerList.setPlayerWalking(false);
+                        }
                     }
                 });
         ui.add(widget);
@@ -247,7 +251,7 @@ public class UIHandler {
                         }
                     });
             ui.add(widget);
-            texture = TextureHandler.createTextureFromString(gl, e.getName(),
+            texture = TextureHandler.createTextureFromString(context, gl, e.getName(),
                     (int)(.05f*h), (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
 
 
@@ -267,14 +271,14 @@ public class UIHandler {
             /* first the name */
             size[1] = 0.05f * h;
             size[0] = 0.30f * w;
-            texture = TextureHandler.createTextureFromString(gl,
+            texture = TextureHandler.createTextureFromString(context, gl,
                     PlayerList.getPlayerList().get(i).getName(),
                     (int)(.05f * h), (int)(.30f * w), TextureHandler.TextAlign.ALIGN_LEFT);
             widget = new UIWidget(PlayerList.getPlayerList().get(i).getName(),
                     texture, DEFAULT_TAG, 0, (.8f + 0.05f * i) * h, size, null);
             ui.add(widget);
             /* then the HP */
-            texture = TextureHandler.createTextureFromString(gl,
+            texture = TextureHandler.createTextureFromString(context, gl,
                     PlayerList.getPlayerList().get(i).getHp() + "/" +
                             PlayerList.getPlayerList().get(i).getMax_hp(),
                     (int)(.05f * h), (int)(.15f * w), TextureHandler.TextAlign.ALIGN_RIGHT);
@@ -288,7 +292,7 @@ public class UIHandler {
         /* the attack button */
         size[0] = 0.25f * w;
         size[1] = 0.1f * h;
-        texture = TextureHandler.createTextureFromString(gl, "Attack", (int)size[1],
+        texture = TextureHandler.createTextureFromString(context, gl, "Attack", (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widget = new UIWidget("Attack", texture, ACTION_MENU_TAG, w - size[0], 0.6f * h, size,
                 new UICallback() {
@@ -312,7 +316,7 @@ public class UIHandler {
         ui.add(widget);
 
         /* the magic button */
-        texture = TextureHandler.createTextureFromString(gl, "Magic", (int)size[1],
+        texture = TextureHandler.createTextureFromString(context, gl, "Magic", (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widget = new UIWidget("Magic", texture, ACTION_MENU_TAG, w - size[0], 0.7f * h, size,
                 new UICallback() {
@@ -345,7 +349,7 @@ public class UIHandler {
         ui.add(widget);
 
         /* the item button */
-        texture = TextureHandler.createTextureFromString(gl, "Item", (int)size[1],
+        texture = TextureHandler.createTextureFromString(context, gl, "Item", (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widget = new UIWidget("Item", texture, ACTION_MENU_TAG, w - size[0], 0.8f * h, size,
                 new UICallback() {
@@ -370,7 +374,7 @@ public class UIHandler {
 
         /* the optional run button */
         if(!BattleManager.isMandatory()) {
-            texture = TextureHandler.createTextureFromString(gl, "Run", (int) size[1],
+            texture = TextureHandler.createTextureFromString(context, gl, "Run", (int) size[1],
                     (int) size[0], TextureHandler.TextAlign.ALIGN_LEFT);
             widget = new UIWidget("Run", texture, ACTION_MENU_TAG, w - size[0], 0.9f * h, size,
                     new UICallback() {
@@ -395,7 +399,7 @@ public class UIHandler {
                 /* if it does, create its menu */
                 for(Magic m : p.getMagicList()) {
                     /* we generate menu entries depending on the spell list */
-                    texture = TextureHandler.createTextureFromString(gl, m.getName(),
+                    texture = TextureHandler.createTextureFromString(context, gl, m.getName(),
                             (int) size[1], (int) size[0], TextureHandler.TextAlign.ALIGN_LEFT);
 
                     widget = new UIWidget(m.getEffect(), texture, SPELL_TAG + i,
@@ -426,7 +430,7 @@ public class UIHandler {
         size = new float[]{0.25f * w, 0.1f * h};
         xpos = 0.75f * w;
         for(i = Inventory.MAX_ITEM_NUMBER - 1; i >= 0; i--) {
-            texture = TextureHandler.createTextureFromString(gl, Inventory.getItemName(i),
+            texture = TextureHandler.createTextureFromString(context, gl, Inventory.getItemName(i),
                     (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
 
             widget = new UIWidget(Integer.toString(i), texture, INVENTORY_TAG,
@@ -458,7 +462,7 @@ public class UIHandler {
 
         /* back button, we only allow to revert current player's actions */
         size = new float[]{0.15f * w, 0.1f * h};
-        texture = TextureHandler.createTextureFromString(gl, "Back", (int)size[1], (int)size[0],
+        texture = TextureHandler.createTextureFromString(context, gl, "Back", (int)size[1], (int)size[0],
                 TextureHandler.TextAlign.ALIGN_LEFT);
         widget = new UIWidget("Back", texture, BACK_BUTTON_TAG, 0.85f* w, 0, size,
                 new UICallback() {
@@ -508,17 +512,16 @@ public class UIHandler {
         size[1] = 0.1f * h;
         x = (w - size[0])/2;
         y = 0.8f * h;
-        texture = TextureHandler.createTextureFromString(gl, "Start", (int)size[1],
+        texture = TextureHandler.createTextureFromString(context, gl, "Start", (int)size[1],
                         (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
         /* and add it to the UI */
         Log.d("loadUI: ", "Placing start button at " + x + ", " + y);
         widget = new UIWidget("Start", texture, DEFAULT_TAG, x, y, size, new UICallback() {
             @Override
             public void onMotionEvent(MotionEvent e, UIWidget w) {
-                if(e.getAction() == MotionEvent.ACTION_UP) {
+                if(e.getAction() == MotionEvent.ACTION_DOWN) {
                     Log.d("UI: ", "start pressed!");
                     GameState.setGameState(GameStateList.LOAD_MAP);
-                    // MapLoader.setActiveMap(MapType.OVERWORLD);
                 }
             }
         });
@@ -610,16 +613,17 @@ public class UIHandler {
 
     /**
      * Refresh user interface.
-     * @param gl    OpenGL context.
+     * @param context   Application context.
+     * @param gl        OpenGL context.
      */
-    public static void refresh(GL10 gl) {
+    public static void refresh(Context context, GL10 gl) {
         int i = 0;
         int h = PlatformData.getScreenHeight();
         int w = PlatformData.getScreenWidth();
         for(UIWidget widget : ui) {
             /* if the widget refers to an HP value on the HP list, refresh its texture */
             if(widget.getTag() == HP_LIST_TAG) {
-                int[] texture = TextureHandler.createTextureFromString(gl,
+                int[] texture = TextureHandler.createTextureFromString(context, gl,
                         PlayerList.getPlayerList().get(i).getHp() + "/" +
                                 PlayerList.getPlayerList().get(i).getMax_hp(),
                         (int)(.05f * h), (int)(.15f * w), TextureHandler.TextAlign.ALIGN_RIGHT);

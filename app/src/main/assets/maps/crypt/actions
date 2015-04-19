@@ -1,0 +1,5 @@
+35,23,NGS1;GSF1;SAYVoice: I am glad you have awakened.;SAYVoice: I am the village priest.;SAYPriest: Please visit me there.
+35,21,NGS1;GSF1;SAYVoice: I am glad you have awakened.;SAYVoice: I am the village priest.;SAYPriest: Please visit me there.
+27,24,NGS2;GSF2;SAYPriest: The world has been overrun by monsters.;SAYPriest: Aesir is powerless to stop it.;SAYPriest: My hopes is that you can help our cause.
+27,25,NGS2;GSF2;SAYPriest: The world has been overrun by monsters.;SAYPriest: Aesir is powerless to stop it.;SAYPriest: My hopes is that you can help our cause.
+45,34,NBS1;BSF1;SAYTyr: Where is it that you are going?;SAYTyr: You may not leave!BOStyr

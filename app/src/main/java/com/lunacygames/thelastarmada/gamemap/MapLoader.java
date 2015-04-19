@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
+
 import javax.microedition.khronos.opengles.GL10;
 
 /**
@@ -26,6 +28,9 @@ import javax.microedition.khronos.opengles.GL10;
 public class MapLoader {
 
     private static MapType amap;
+    private static ArrayList<Boolean> mapWall;
+    private static ArrayList<String> monsterList;
+    private static int horizontal;
 
     /**
      * Load active map from a file.
@@ -48,6 +53,8 @@ public class MapLoader {
         }
         /* java does not allow to make an array of generics without employing hacks */
         ArrayList<ArrayList<MapEntity>> map = new ArrayList<ArrayList<MapEntity>>();
+        /* object list for second layer */
+        mapWall = new ArrayList<Boolean>();
         /* start reading from file, hopefully... */
         BufferedReader reader = new BufferedReader(new InputStreamReader(csv));
         try {
@@ -71,10 +78,16 @@ public class MapLoader {
                 s = reader.readLine();
                 Log.d("MapLoad:", "Loading layer " + s);
                 file = context.getAssets().open(s);
-                map.add(loadLayer(file, textures));
+                map.add(loadLayer(file, textures, i == 1));
                 /* deal with potential resource leak */
                 file.close();
             }
+            /* the next line is the monster list */
+            s = reader.readLine();
+            monsterList = new ArrayList<String>();
+            for(String str : s.split(","))
+                monsterList.add(str);
+
         } catch (IOException e) {
             /* screw it... this means we messed up somewhere in the resource creation
              * that, or the platform is broken
@@ -99,11 +112,12 @@ public class MapLoader {
         return amap;
     }
 
-    private static ArrayList<MapEntity> loadLayer(InputStream file, ArrayList<int[]> textures) {
+    private static ArrayList<MapEntity>
+    loadLayer(InputStream file, ArrayList<int[]> textures, boolean fillObjectList) {
         ArrayList<MapEntity> layer = new ArrayList<MapEntity>();
         int x, y;
         x = 0; y = 0;
-        int horizontal = 0;
+        horizontal = 0;
         String s;
         float sizeX = (float) PlatformData.getScreenWidth() / 11.0f;
         float size[] = {sizeX, sizeX};
@@ -125,6 +139,7 @@ public class MapLoader {
                         /* and add it to the map */
                         layer.add(m);
                     }
+                    if(fillObjectList) mapWall.add(i != -1);
                     x++;
                     if(horizontal < x) horizontal++;
                 }
@@ -140,5 +155,16 @@ public class MapLoader {
         Camera.setMaxPan(cameraPan);
 
         return layer;
+    }
+
+    public static String getRandomEnemy() {
+        Random rng = new Random();
+        return monsterList.get(rng.nextInt(monsterList.size()));
+    }
+
+    public static boolean hasObject(int x, int y) {
+        boolean objectPresent;
+        objectPresent = mapWall.get(x + horizontal * y);
+        return objectPresent;
     }
 }

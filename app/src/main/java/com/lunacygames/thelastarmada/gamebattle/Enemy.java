@@ -22,11 +22,13 @@ public class Enemy {
 
     private static ArrayList<Enemy> enemyList;
     private static int activeEnemies;
+    private static ArrayList<String> enemyQueue;
 
     private int[] texture;
     private ArrayList<String> actionList;
     private float scale;
     private ArrayList<String> ondefeat;
+
 
     private String name;
 
@@ -109,9 +111,17 @@ public class Enemy {
         }
     }
 
-    public static void loadEnemyList(Context context, GL10 gl, String[] enemies) {
+    public static void resetEnemyQueue() {
+        enemyQueue = new ArrayList<String>();
+    }
+
+    public static void addEnemy(String e) {
+        enemyQueue.add(e);
+    }
+
+    public static void loadEnemyList(Context context, GL10 gl) {
         enemyList = new ArrayList<Enemy>();
-        for(String enemy : enemies)
+        for(String enemy : enemyQueue)
             enemyList.add(new Enemy(context, gl, enemy));
 
         activeEnemies = enemyList.size();

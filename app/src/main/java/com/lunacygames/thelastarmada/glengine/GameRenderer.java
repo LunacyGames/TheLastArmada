@@ -45,6 +45,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     Time c;
     private int pan_direction;
     private float[] camera;
+    private float fadeCount = 0;
 
     public GameRenderer(Context context) {
         this.context = context;
@@ -67,6 +68,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
         gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
+
     }
 
     @Override
@@ -125,7 +127,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 TopMessage.setup();
                 break;
             case LOAD_MAP:
-                // MapLoader.setActiveMap(MapType.OVERWORLD);
+                /* kill the old texture */
+                titleScreen.setTexture(null);
                 map = MapLoader.loadMap(context, gl);
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
                 break;
@@ -140,19 +143,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 renderScreen(gl);
                 break;
             case TO_BATTLE:
-                BattleManager.reset();
-                ActionEvent.emptyActionQueue();
-                String[] enemies = { "tyr" };
-                for(Player p : PlayerList.getPlayerList()) {
-                    p.resetStats();
-                }
-                Enemy.loadEnemyList(context, gl, enemies);
+                Enemy.loadEnemyList(context, gl);
                 UIHandler.setActive(UIList.BATTLE);
                 UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.BATTLE);
                 break;
+            case TO_BATTLE_EFFECT:
+                fadeCount += 0.1f;
+                if(fadeCount >= 3f) {
+                    fadeCount = 0;
+                    GameState.setGameState(GameStateList.TO_BATTLE);
+                }
+                renderScreen(gl);
+                break;
             case BATTLE:
-                UIHandler.refresh(gl);
+                UIHandler.refresh(this.context, gl);
                 if(BattleManager.getState() == BattleState.START)
                     BattleManager.updateState(0, null);
                 renderScreen(gl);
@@ -165,7 +170,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         /* redraw background */
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-
 
         switch (GameState.getGameState()) {
             case TITLE_SCREEN: {
@@ -252,8 +256,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         }
 
-        /* draw the UI and draw the top message */
+        /* draw UI and top message */
         UIHandler.drawUI(gl);
-        TopMessage.onDraw(gl);
+        TopMessage.onDraw(this.context, gl);
+
+
     }
 }

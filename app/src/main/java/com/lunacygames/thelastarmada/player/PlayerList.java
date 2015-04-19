@@ -25,6 +25,7 @@ public class PlayerList {
     private static int currentFrame = 0;
     private static ArrayList<int[]> textures;
     private static int frameOffset = 0;
+    private static boolean isWalking = false;
 
 
     public static void initPlayerList(Context context, GL10 gl) {
@@ -152,5 +153,13 @@ public class PlayerList {
 
     public static void setState(PlayerState state) {
         PlayerList.state = state;
+    }
+
+    public static void setPlayerWalking(boolean b) {
+        isWalking = b;
+    }
+
+    public static boolean isPlayerWalking() {
+        return isWalking;
     }
 }

@@ -16,5 +16,5 @@ public enum GameStateList {
     GAME_OVER_LOSS,
     BATTLE_VICTORY,
     LOAD_OVERWORLD_UI,
-    GAME_OVER_WIN
+    TO_BATTLE_EFFECT, GAME_OVER_WIN
 }

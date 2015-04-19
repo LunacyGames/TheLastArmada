@@ -69,10 +69,14 @@ public class SaveFileHandler {
                 fOut.write("0\n");    /* experience */
             }
             /* then the current position */
-            fOut.write("37,25\n");
+            fOut.write("35,22\n");
             /* then the current map */
             fOut.write("1\n");
             /* then, the game status */
+            fOut.write("0\n");
+            /* then the boss status */
+            fOut.write("0\n");
+            /* then the chest status */
             fOut.write("0\n");
             /* then, the inventory list */
             for(int i = 0; i < Inventory.MAX_ITEM_NUMBER; i++)
@@ -121,6 +125,10 @@ public class SaveFileHandler {
             }
             /* then the game status */
             fOut.write(Integer.toString(GameState.getGameFlags()) + "\n");
+            /* then the boss flags */
+            fOut.write(Integer.toString(GameState.getBossFlags()) + "\n");
+            /* then the chest flags */
+            fOut.write(Integer.toString(GameState.getChestFlags()) + "\n");
             /* then, the item list */
             for(int i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {
                 fOut.write(Inventory.getItemCount(i) + "\n");
@@ -158,6 +166,7 @@ public class SaveFileHandler {
             for(String coord : s.split(","))
                 position[i++] = Integer.parseInt(coord);
             Camera.setPosition(position);
+            Log.d("LoadSave: ", "Position at " + position[0] + " " + position[1]);
             /* current map */
             s = fileIn.readLine();
             switch(s) {
@@ -173,6 +182,10 @@ public class SaveFileHandler {
             /* game status */
             s = fileIn.readLine();
             GameState.setGameFlags(Integer.parseInt(s));
+            /* boss status */
+            GameState.setBossFlags(Integer.parseInt(s));
+            /* chest status */
+            GameState.setChestFlags(Integer.parseInt(s));
             /* the rest is the inventory list */
             for(i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {
                 s = fileIn.readLine();

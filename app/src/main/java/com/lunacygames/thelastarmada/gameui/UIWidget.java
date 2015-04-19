@@ -71,6 +71,7 @@ public class UIWidget {
         } else {
             text = null;
         }
+
     }
 
     public void setTexture(GL10 gl, int[] texture) {

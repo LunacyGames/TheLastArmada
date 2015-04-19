@@ -8,7 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLUtils;
 
 import java.io.IOException;
@@ -98,6 +100,8 @@ public class TextureHandler {
 
     /**
      * Create a texture from a string.
+     *
+     * @param context
      * @param gl        OpenGL ES context to use
      * @param str       String
      * @param height    Height of the texture
@@ -105,8 +109,8 @@ public class TextureHandler {
      * @param align     Text alignment
      * @return          Created texture.
      */
-    public static int[] createTextureFromString(GL10 gl,
-                                              String str, int height, int width, TextAlign align) {
+    public static int[] createTextureFromString(Context context, GL10 gl,
+                                                String str, int height, int width, TextAlign align) {
         int txtHeight;
         /* typeface */
         Typeface tf = Typeface.create("sans-serif-smallcaps", Typeface.NORMAL);
@@ -116,8 +120,13 @@ public class TextureHandler {
         /* a canvas and a paint */
         Canvas canvas = new Canvas(bmp);
         Paint paint = new Paint();
+        /* and a drawable */
+        Bitmap bg = loadBitmap(context, "buttons/widgetbg.png");
+        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), bg);
+        drawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
         /* container for measurements */
         Rect bounds = new Rect();
+        drawable.setBounds(0, 0, width, height);
         /* set paint properties */
         paint.setColor(Color.WHITE);
         paint.setTextSize((int)(0.75*(height - 4)));
@@ -128,7 +137,7 @@ public class TextureHandler {
         txtHeight = bounds.height();
         paint.getTextBounds(str, 0, str.length(), bounds);
         /* set canvas background */
-        canvas.drawColor(WidgetColor);
+        drawable.draw(canvas);
 
         /* and draw text */
         switch(align) {
