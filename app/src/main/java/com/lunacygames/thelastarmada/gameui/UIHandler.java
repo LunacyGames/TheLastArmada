@@ -413,7 +413,7 @@ public class UIHandler {
 
                                     BattleManager.updateState(0, null);
                                 }
-                    });
+                            });
                     widget.setVisible(false);
                     ui.add(widget);
                     j++;
@@ -509,7 +509,7 @@ public class UIHandler {
         x = (w - size[0])/2;
         y = 0.8f * h;
         texture = TextureHandler.createTextureFromString(gl, "Start", (int)size[1],
-                        (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+                (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
         /* and add it to the UI */
         Log.d("loadUI: ", "Placing start button at " + x + ", " + y);
         widget = new UIWidget("Start", texture, DEFAULT_TAG, x, y, size, new UICallback() {

@@ -214,4 +214,12 @@ public class Enemy {
     public void setSpd(int spd) {
         this.spd = spd;
     }
+
+    public void setAtk(int atk) {
+        this.atk = atk;
+    }
+
+    public void setSatk(int satk) {
+        this.satk = satk;
+    }
 }
