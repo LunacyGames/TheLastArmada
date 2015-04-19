@@ -103,7 +103,6 @@ public class UIHandler {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Log.d("UI: ", "Left");
                         Camera.lockPan();
                         PlayerList.setState(PlayerState.WALK_EAST);
                     }
@@ -115,7 +114,6 @@ public class UIHandler {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Log.d("UI: ", "Right");
                         Camera.lockPan();
                         PlayerList.setState(PlayerState.WALK_WEST);
                     }
@@ -127,7 +125,6 @@ public class UIHandler {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Log.d("UI: ", "Up");
                         Camera.lockPan();
                         PlayerList.setState(PlayerState.WALK_NORTH);
                     }
@@ -139,7 +136,6 @@ public class UIHandler {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Log.d("UI: ", "Down");
                         Camera.lockPan();
                         PlayerList.setState(PlayerState.WALK_SOUTH);
                     }
@@ -160,7 +156,6 @@ public class UIHandler {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         PlayerList.setState(PlayerState.IDLE);
-                        Log.d("UI: ", "Menu pressed");
                         GameState.setGameState(GameStateList.TO_BATTLE);
                     }
                 });
@@ -190,6 +185,7 @@ public class UIHandler {
             case VILLAGE:
                 break;
             case DUNGEON:
+                bmp = TextureHandler.loadBitmap(context, "battlescreen/overworld.png");
                 break;
             case OVERWORLD:
                 bmp = TextureHandler.loadBitmap(context, "battlescreen/overworld.png");

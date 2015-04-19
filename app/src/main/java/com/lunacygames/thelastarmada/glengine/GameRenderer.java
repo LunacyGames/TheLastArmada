@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.text.format.Time;
+import android.util.Log;
 
 import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.gameui.TopMessage;
@@ -36,7 +37,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GameRenderer implements GLSurfaceView.Renderer {
 
-    private ArrayList<MapEntity> map;
+    private ArrayList<ArrayList<MapEntity>> map;
+    private MapEntity titleScreen;
     private Context context;
     private int fps;
     private long seconds;
@@ -105,9 +107,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 camera = new float[]{0, 0};
                 pan_direction = 0;
                 /* we need the background to scroll, so we make it a map entity */
-                MapEntity m = new MapEntity(title, 0, 0, size);
-                map = new ArrayList<MapEntity>();
-                map.add(m);
+                titleScreen = new MapEntity(title, 0, 0, size);
 
                 /* set up the UI */
                 UIHandler.setActive(UIList.START);
@@ -127,6 +127,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             case LOAD_MAP:
                 // MapLoader.setActiveMap(MapType.OVERWORLD);
                 map = MapLoader.loadMap(context, gl);
+                GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
+                break;
             case BATTLE_VICTORY:
                 /* TODO: add extra stuff, for now, fall through */
             case LOAD_OVERWORLD_UI:
@@ -140,7 +142,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             case TO_BATTLE:
                 BattleManager.reset();
                 ActionEvent.emptyActionQueue();
-                String[] enemies = { "fenrir" };
+                String[] enemies = { "tyr" };
                 for(Player p : PlayerList.getPlayerList()) {
                     p.resetStats();
                 }
@@ -199,45 +201,44 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                         }
                         break;
                 }
-                //Camera.setPan(camera);
+                titleScreen.onDraw(gl);
+                break;
             }
+            case OVERWORLD:
+                camera = Camera.getPan();
+                gl.glTranslatef(-camera[0], -camera[1], 0.0f);
+                Camera.update();
+                /* cache some values */
+                int vsprites =
+                        (int) Math.ceil(PlatformData.getScreenHeight() / PlatformData.getTileSize()) + 1;
+                float xpos, ypos;
+                float tilesize = PlatformData.getTileSize();
+                /* get the layers of the map and render them */
+                for(int i = 0; i < 3; i++) {
+                    gl.glPushMatrix();
+                    gl.glLoadIdentity();
+                    gl.glTranslatef(-camera[0], -camera[1], 0.0f);
 
+                    for (MapEntity e : map.get(i)) {
+                        /* check for no sprite */
+                        if (e == null) continue;
+
+                        xpos = e.getX();
+                        ypos = e.getY();
+                        if (((xpos > (Camera.getPan()[0] - tilesize)
+                                && xpos < Camera.getPan()[0] + 12 * tilesize))
+                                && (ypos > Camera.getPan()[1] - tilesize)
+                                && (ypos < Camera.getPan()[1] + vsprites * tilesize))
+                            e.onDraw(gl);
+                    }
+                    /* if we finished rendering the first layer, then draw the player */
+                    if(i == 0) PlayerList.onDraw(gl);
+                }
+                /* restore OpenGL stack */
+                for(int i = 0; i < 3; i++) gl.glPopMatrix();
+            break;
         }
 
-        /* if we are in the overworld, position the camera on top of the player */
-        if (GameState.getGameState() == GameStateList.OVERWORLD) {
-            camera = Camera.getPan();
-            gl.glTranslatef(-camera[0], -camera[1], 0.0f);
-            Camera.update();
-        }
-
-        /* cache some values */
-        int vsprites =
-                (int) Math.ceil(PlatformData.getScreenHeight() / PlatformData.getTileSize()) + 1;
-        float xpos, ypos;
-        float tilesize = PlatformData.getTileSize();
-        /* render the map */
-        if (GameState.getGameState() == GameStateList.OVERWORLD) {
-            for(MapEntity e : map) {
-                /* check for no sprite */
-                if (e == null) continue;
-                xpos = e.getX();
-                ypos = e.getY();
-                if (((xpos > (Camera.getPan()[0] - tilesize)
-                        && xpos < Camera.getPan()[0] + 12 * tilesize))
-                        && (ypos > Camera.getPan()[1] - tilesize)
-                        && (ypos < Camera.getPan()[1] + vsprites * tilesize))
-                    e.onDraw(gl);
-            }
-        } else {
-            for(MapEntity e : map) {
-                e.onDraw(gl);
-            }
-        }
-
-        /* if on the overworld, draw the player sprite */
-        if(GameState.getGameState() == GameStateList.OVERWORLD)
-            PlayerList.onDraw(gl);
 
         /* if we are on a battle, process the action queue if ready */
         if(BattleManager.getState() == BattleState.PROCESS_ACTION_QUEUE) {
@@ -254,8 +255,5 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         /* draw the UI and draw the top message */
         UIHandler.drawUI(gl);
         TopMessage.onDraw(gl);
-
-
-
     }
 }
