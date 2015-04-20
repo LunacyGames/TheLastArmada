@@ -24,6 +24,8 @@ public class GameSurface extends GLSurfaceView {
         // setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         this.setPreserveEGLContextOnPause(true);
         this.setRenderer(renderer);
+        /* set context for Sound Engine */
+        SoundEngine.getInstance().setContext(context);
     }
 
     @Override

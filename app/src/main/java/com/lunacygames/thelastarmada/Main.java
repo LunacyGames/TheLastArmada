@@ -13,6 +13,7 @@ import com.lunacygames.thelastarmada.gameutils.GameStateList;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.glengine.GameSurface;
+import com.lunacygames.thelastarmada.glengine.SoundEngine;
 
 public class Main extends Activity {
 
@@ -56,12 +57,14 @@ public class Main extends Activity {
 
     @Override
     protected void onPause() {
+        SoundEngine.getInstance().onPause();
         super.onPause();
         surface.onPause();
     }
 
     @Override
     protected void onResume() {
+        SoundEngine.getInstance().onResume();
         super.onResume();
         surface.onResume();
     }

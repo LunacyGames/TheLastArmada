@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.text.format.Time;
-import android.util.Log;
 
-import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.gameui.TopMessage;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
@@ -24,7 +22,6 @@ import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
 import com.lunacygames.thelastarmada.player.Inventory;
-import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
 import java.util.ArrayList;
@@ -135,6 +132,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             case BATTLE_VICTORY:
                 /* TODO: add extra stuff, for now, fall through */
             case LOAD_OVERWORLD_UI:
+                SoundEngine.getInstance().playBGMusic("sounds/bgmusic/overworld.ogg");
                 UIHandler.setActive(UIList.OVERWORLD);
                 UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.OVERWORLD);
@@ -143,6 +141,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 renderScreen(gl);
                 break;
             case TO_BATTLE:
+                SoundEngine.getInstance().playBGMusic("sounds/bgmusic/battle.ogg");
                 Enemy.loadEnemyList(context, gl);
                 UIHandler.setActive(UIList.BATTLE);
                 UIHandler.loadUI(context, gl);
