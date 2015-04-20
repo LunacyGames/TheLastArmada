@@ -30,6 +30,7 @@ public class MapLoader {
     private static MapType amap;
     private static ArrayList<Boolean> mapWall;
     private static ArrayList<String> monsterList;
+    private static ArrayList<ActionTile> actionTiles;
     private static int horizontal;
 
     /**
@@ -87,7 +88,10 @@ public class MapLoader {
             monsterList = new ArrayList<String>();
             for(String str : s.split(","))
                 monsterList.add(str);
-
+            /* the next line is file with the action tiles */
+            s = reader.readLine();
+            file = context.getAssets().open(s);
+            loadActions(file);
         } catch (IOException e) {
             /* screw it... this means we messed up somewhere in the resource creation
              * that, or the platform is broken
@@ -102,6 +106,24 @@ public class MapLoader {
             e.printStackTrace();
         }
         return map;
+    }
+
+    private static void loadActions(InputStream file) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+        String s;
+        String split[];
+        ActionTile tile;
+        actionTiles = new ArrayList<ActionTile>();
+        try {
+            while((s = reader.readLine()) != null && s.length() != 0) {
+                split = s.split(",");
+                tile = new ActionTile(Integer.parseInt(split[0]),
+                        Integer.parseInt(split[1]), split[2]);
+                actionTiles.add(tile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setActiveMap(MapType activeMap) {
@@ -166,5 +188,21 @@ public class MapLoader {
         boolean objectPresent;
         objectPresent = mapWall.get(x + horizontal * y);
         return objectPresent;
+    }
+
+    public static boolean tileHasAction(int x, int y) {
+        for(ActionTile tile : actionTiles) {
+            if(tile.hasAction(x, y))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static void actionHandler(int x, int y) {
+        for(ActionTile tile : actionTiles) {
+            if(tile.hasAction(x, y))
+                Log.d("action: ", "tile has action " + tile.getActionScript());
+        }
     }
 }

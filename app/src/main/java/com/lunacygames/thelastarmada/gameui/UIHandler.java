@@ -106,7 +106,9 @@ public class UIHandler {
                             Camera.lockPan();
                             PlayerList.setState(PlayerState.WALK_EAST);
                             PlayerList.setPlayerWalking(true);
-                        } else if(e.getAction() == MotionEvent.ACTION_UP) {
+                        } else if(e.getAction() == MotionEvent.ACTION_CANCEL
+                                || e.getAction() == MotionEvent.ACTION_UP) {
+
                             PlayerList.setPlayerWalking(false);
                         }
                     }
@@ -117,9 +119,16 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Camera.lockPan();
-                        PlayerList.setState(PlayerState.WALK_WEST);
+                        if(e.getAction() == MotionEvent.ACTION_DOWN) {
+                            if(PlayerList.getState() != PlayerState.IDLE) return;
+                            Camera.lockPan();
+                            PlayerList.setState(PlayerState.WALK_WEST);
+                            PlayerList.setPlayerWalking(true);
+                        } else if(e.getAction() == MotionEvent.ACTION_CANCEL
+                                || e.getAction() == MotionEvent.ACTION_UP) {
+
+                            PlayerList.setPlayerWalking(false);
+                        }
                     }
                 });
         ui.add(widget);
@@ -128,9 +137,15 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Camera.lockPan();
-                        PlayerList.setState(PlayerState.WALK_NORTH);
+                        if(e.getAction() == MotionEvent.ACTION_DOWN) {
+                            if (PlayerList.getState() != PlayerState.IDLE) return;
+                            Camera.lockPan();
+                            PlayerList.setState(PlayerState.WALK_NORTH);
+                            PlayerList.setPlayerWalking(true);
+                        } else if(e.getAction() == MotionEvent.ACTION_CANCEL
+                                || e.getAction() == MotionEvent.ACTION_UP) {
+                            PlayerList.setPlayerWalking(false);
+                        }
                     }
                 });
         ui.add(widget);
@@ -139,9 +154,15 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        if(PlayerList.getState() != PlayerState.IDLE) return;
-                        Camera.lockPan();
-                        PlayerList.setState(PlayerState.WALK_SOUTH);
+                        if(e.getAction() == MotionEvent.ACTION_DOWN) {
+                            if (PlayerList.getState() != PlayerState.IDLE) return;
+                            Camera.lockPan();
+                            PlayerList.setState(PlayerState.WALK_SOUTH);
+                            PlayerList.setPlayerWalking(true);
+                        } else if(e.getAction() == MotionEvent.ACTION_CANCEL
+                                || e.getAction() == MotionEvent.ACTION_UP) {
+                            PlayerList.setPlayerWalking(false);
+                        }
                     }
                 });
         ui.add(widget);

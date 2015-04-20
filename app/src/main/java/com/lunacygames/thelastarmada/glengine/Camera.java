@@ -66,7 +66,7 @@ public class Camera {
         /* we use the height to compute the scroll speed */
         int h = PlatformData.getScreenHeight();
         float sizeX = PlatformData.getScreenWidth() / 11.0f;
-
+        boolean onNewTile = false;
         switch(PlayerList.getState()) {
             case IDLE:
                 return;
@@ -81,7 +81,8 @@ public class Camera {
                 if(pan[1] + sizeX <= oldPan[1]) {
                     pan[1] = oldPan[1] - sizeX;
                     position[1]--;
-                    PlayerList.setState(PlayerState.IDLE);
+                    onNewTile = true;
+                    checkContinuousWalk();
                 }
 
                 /* check whether we reached the top */
@@ -101,7 +102,8 @@ public class Camera {
                 if(pan[1] - sizeX >= oldPan[1]) {
                     pan[1] = oldPan[1] + sizeX;
                     position[1]++;
-                    PlayerList.setState(PlayerState.IDLE);
+                    onNewTile = true;
+                    checkContinuousWalk();
                 }
 
                 /* check whether we reached the bottom */
@@ -120,7 +122,8 @@ public class Camera {
                 if(pan[0] + sizeX <= oldPan[0]) {
                     pan[0] = oldPan[0] - sizeX;
                     position[0]--;
-                    PlayerList.setState(PlayerState.IDLE);
+                    onNewTile = true;
+                    checkContinuousWalk();
                 }
 
                 /* check whether we reached the far east side */
@@ -138,7 +141,8 @@ public class Camera {
                 if(pan[0] - sizeX >= oldPan[0]) {
                     pan[0] = oldPan[0] + sizeX;
                     position[0]++;
-                    PlayerList.setState(PlayerState.IDLE);
+                    onNewTile = true;
+                    checkContinuousWalk();
                 }
                 /* check whether we reached the far west side */
                 if(pan[0] >= panMax[0]) {
@@ -147,12 +151,29 @@ public class Camera {
                 }
                 break;
         }
-        /* if we get here, it is because we finished walking into a tile */
-        if(PlayerList.getState() == PlayerState.IDLE) {
+
+
+        /* check if we finished walking into a tile */
+        if(onNewTile) {
+            /* check if the tile we are in has events */
+            if(MapLoader.tileHasAction(position[0], position[1])) {
+                /* force the player into an idle state */
+                PlayerList.setPlayerWalking(false);
+                PlayerList.setState(PlayerState.IDLE);
+                /* trigger them */
+                MapLoader.actionHandler(position[0], position[1]);
+                /* we don't trigger random battles if we are on an action tile */
+                return;
+            }
             /* check if we enter into a battle */
             if(!checkIfBattle(0.2f)) return;
 
-            /* hosekeeping tasks */
+            /* force the player into an idle state */
+            PlayerList.setPlayerWalking(false);
+            PlayerList.setState(PlayerState.IDLE);
+
+
+            /* hosekeeping tasks to start the battle */
             BattleManager.reset();
             Enemy.resetEnemyQueue();
             ActionEvent.emptyActionQueue();
@@ -170,6 +191,14 @@ public class Camera {
 
             /* we are going to fight stuff! */
             GameState.setGameState(GameStateList.TO_BATTLE_EFFECT);
+        }
+    }
+
+    private static void checkContinuousWalk() {
+        if(!PlayerList.isPlayerWalking()) {
+            PlayerList.setState(PlayerState.IDLE);
+        } else {
+            lockPan();
         }
     }
 
