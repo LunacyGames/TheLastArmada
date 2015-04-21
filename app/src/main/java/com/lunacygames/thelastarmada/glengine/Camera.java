@@ -157,11 +157,13 @@ public class Camera {
         if(onNewTile) {
             /* check if the tile we are in has events */
             if(MapLoader.tileHasAction(position[0], position[1])) {
-                /* force the player into an idle state */
-                PlayerList.setPlayerWalking(false);
-                PlayerList.setState(PlayerState.IDLE);
-                /* trigger them */
-                MapLoader.actionHandler(position[0], position[1]);
+                /* trigger the action */
+                boolean b = MapLoader.actionHandler(position[0], position[1]);
+                if(b) {
+                    /* force the player into an idle state if we triggered the action */
+                    PlayerList.setPlayerWalking(false);
+                    PlayerList.setState(PlayerState.IDLE);
+                }
                 /* we don't trigger random battles if we are on an action tile */
                 return;
             }
@@ -183,11 +185,6 @@ public class Camera {
 
             /* check if we can add a second enemey */
             if(checkIfBattle(0.5f)) Enemy.addEnemy(MapLoader.getRandomEnemy());
-
-            /* reset player stats before battle */
-            for(Player p : PlayerList.getPlayerList()) {
-                p.resetStats();
-            }
 
             /* we are going to fight stuff! */
             GameState.setGameState(GameStateList.TO_BATTLE_EFFECT);

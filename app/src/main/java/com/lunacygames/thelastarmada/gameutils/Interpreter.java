@@ -2,6 +2,7 @@ package com.lunacygames.thelastarmada.gameutils;
 
 import android.util.Log;
 
+import com.lunacygames.thelastarmada.gamebattle.ActionEvent;
 import com.lunacygames.thelastarmada.gamebattle.BattleManager;
 import com.lunacygames.thelastarmada.gamebattle.BattleState;
 import com.lunacygames.thelastarmada.gamebattle.Enemy;
@@ -16,6 +17,40 @@ import java.util.Random;
  * Created by zeus on 3/12/15.
  */
 public class Interpreter {
+    public static boolean execScript(String script) {
+        String s;
+        int flag;
+        for(String cmd : script.split(";")) {
+            s = cmd.substring(0, 3);
+            Log.d("Script: ", "executing " + cmd);
+            if(s.equalsIgnoreCase("NGS")) {
+                /* not game flag set */
+                flag = Integer.parseInt(cmd.substring(3));
+                if(GameState.getGameFlag(flag))
+                    return false;
+            } else if(s.equalsIgnoreCase("GSF")) {
+                /* game set flag */
+                GameState.setGameFlags(Integer.parseInt(cmd.substring(3)));
+            } else if(s.equalsIgnoreCase("NGC")) {
+                /* not get chest set */
+                flag = Integer.parseInt(cmd.substring(3));
+                if(GameState.getChestFlag(flag))
+                    return false;
+            } else if(s.equalsIgnoreCase("CSF")) {
+                /* chest set flag */
+                GameState.setChestFlags(Integer.parseInt(cmd.substring(3)));
+            } else if(s.equalsIgnoreCase("NBS")) {
+                /* not boss flag set */
+                flag = Integer.parseInt(cmd.substring(3));
+                if(GameState.getBossFlag(flag))
+                    return false;
+            } else {
+                doCommand(cmd);
+            }
+        }
+        return true;
+    }
+
     public static void doCommand(String cmd) {
         Log.d("Interpreter: ", "processing command " + cmd);
         String[] split = new String[2];
@@ -25,6 +60,7 @@ public class Interpreter {
         if(split[0].equalsIgnoreCase("ATK")) {
             /* attack command */
             processAttack(split[1]);
+            checkForNoEnemies();
         } else if(split[0].equalsIgnoreCase("EXP")) {
             /* Gain experience */
             int gain = Integer.parseInt(split[1]);
@@ -33,10 +69,24 @@ public class Interpreter {
             }
         } else if(split[0].equalsIgnoreCase("MAG")) {
             processMagic(split[1]);
+            checkForNoEnemies();
+        } else if(split[0].equalsIgnoreCase("BOS")) {
+            /* boss fight! */
+            BattleManager.reset();
+            Enemy.resetEnemyQueue();
+            ActionEvent.emptyActionQueue();
+            Enemy.addEnemy(split[1]);
+            /* can't run away from this one */
+            BattleManager.setMandatory(true);
+            GameState.setGameState(GameStateList.TO_BATTLE_EFFECT);
+        } else if(split[0].equalsIgnoreCase("SAY")) {
+            TopMessage.showMessage(split[1]);
         } else {
             Log.e("Interpreter: ", "bad command " + cmd);
         }
+    }
 
+    private static void checkForNoEnemies() {
         if(Enemy.getActiveEnemies() == 0) {
             BattleManager.setState(BattleState.VICTORY);
             GameState.setGameState(GameStateList.BATTLE_VICTORY);

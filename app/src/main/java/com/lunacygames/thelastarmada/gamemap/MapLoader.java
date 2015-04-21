@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.glengine.Camera;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
@@ -199,10 +200,11 @@ public class MapLoader {
         return false;
     }
 
-    public static void actionHandler(int x, int y) {
+    public static boolean actionHandler(int x, int y) {
         for(ActionTile tile : actionTiles) {
             if(tile.hasAction(x, y))
-                Log.d("action: ", "tile has action " + tile.getActionScript());
+                return Interpreter.execScript(tile.getActionScript());
         }
+        return false;
     }
 }

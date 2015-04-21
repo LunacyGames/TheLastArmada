@@ -22,6 +22,7 @@ import com.lunacygames.thelastarmada.gameutils.PlatformData;
 import com.lunacygames.thelastarmada.gameutils.SaveFileHandler;
 import com.lunacygames.thelastarmada.gameutils.TextureHandler;
 import com.lunacygames.thelastarmada.player.Inventory;
+import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
 
 import java.util.ArrayList;
@@ -130,7 +131,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
                 break;
             case BATTLE_VICTORY:
-                /* TODO: add extra stuff, for now, fall through */
+                /* reset player stats before battle */
+                for(Player p : PlayerList.getPlayerList()) {
+                    p.resetStats();
+                }
+                /* todo: victory show screen */
+                GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
+                break;
             case LOAD_OVERWORLD_UI:
                 SoundEngine.getInstance().playBGMusic("sounds/bgmusic/overworld.ogg");
                 UIHandler.setActive(UIList.OVERWORLD);
