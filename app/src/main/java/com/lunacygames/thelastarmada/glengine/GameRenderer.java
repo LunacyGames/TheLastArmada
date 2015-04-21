@@ -139,7 +139,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
                 break;
             case LOAD_OVERWORLD_UI:
-                SoundEngine.getInstance().playBGMusic("sounds/bgmusic/overworld.ogg");
+                SoundEngine.getInstance().playBGMusic(MapLoader.getBgMusic());
                 UIHandler.setActive(UIList.OVERWORLD);
                 UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.OVERWORLD);

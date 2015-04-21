@@ -205,20 +205,7 @@ public class UIHandler {
         size[1] = 1440.0f * w / 1920.0f;
 
         /* the background image depends on the active map */
-        Bitmap bmp = null;
-        switch(MapLoader.getActiveMap()) {
-            case VILLAGE:
-                break;
-            case DUNGEON:
-                bmp = TextureHandler.loadBitmap(context, "battlescreen/overworld.png");
-                break;
-            case OVERWORLD:
-                bmp = TextureHandler.loadBitmap(context, "battlescreen/overworld.png");
-                break;
-            default:
-                bmp = TextureHandler.loadBitmap(context, "titlescreen/titlescreen.png");
-                break;
-        }
+        Bitmap bmp = TextureHandler.loadBitmap(context, MapLoader.getBattleground());
         texture = TextureHandler.createTexture(bmp, gl);
         widget = new UIWidget(null, texture, DEFAULT_TAG, 0, 0, size, null);
         ui.add(widget);

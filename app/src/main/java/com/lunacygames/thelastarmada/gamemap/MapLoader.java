@@ -33,6 +33,8 @@ public class MapLoader {
     private static ArrayList<String> monsterList;
     private static ArrayList<ActionTile> actionTiles;
     private static int horizontal;
+    private static String battleground;
+    private static String bgMusic;
 
     /**
      * Load active map from a file.
@@ -93,6 +95,10 @@ public class MapLoader {
             s = reader.readLine();
             file = context.getAssets().open(s);
             loadActions(file);
+            /* the next line is the battleground */
+            battleground = reader.readLine();
+            /* the next line is the background music */
+            bgMusic = reader.readLine();
         } catch (IOException e) {
             /* screw it... this means we messed up somewhere in the resource creation
              * that, or the platform is broken
@@ -133,6 +139,14 @@ public class MapLoader {
 
     public static MapType getActiveMap() {
         return amap;
+    }
+
+    public static String getBattleground() {
+        return battleground;
+    }
+
+    public static String getBgMusic() {
+        return bgMusic;
     }
 
     private static ArrayList<MapEntity>
