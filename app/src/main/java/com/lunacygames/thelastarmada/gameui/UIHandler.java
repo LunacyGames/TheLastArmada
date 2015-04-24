@@ -425,7 +425,7 @@ public class UIHandler {
 
                                     BattleManager.updateState(0, null);
                                 }
-                    });
+                            });
                     widget.setVisible(false);
                     ui.add(widget);
                     j++;
