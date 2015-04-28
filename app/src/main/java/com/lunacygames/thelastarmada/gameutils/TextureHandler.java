@@ -104,13 +104,13 @@ public class TextureHandler {
      * @param context
      * @param gl        OpenGL ES context to use
      * @param str       String
-     * @param height    Height of the texture
+     * @param showBG
+     *@param height    Height of the texture
      * @param width     Width of the texture
-     * @param align     Text alignment
-     * @return          Created texture.
+     * @param align     Text alignment    @return          Created texture.
      */
     public static int[] createTextureFromString(Context context, GL10 gl,
-                                                String str, int height, int width, TextAlign align) {
+                                                String str, boolean showBG, int height, int width, TextAlign align) {
         int txtHeight;
         /* typeface */
         Typeface tf = Typeface.create("sans-serif-smallcaps", Typeface.NORMAL);
@@ -137,7 +137,8 @@ public class TextureHandler {
         txtHeight = bounds.height();
         paint.getTextBounds(str, 0, str.length(), bounds);
         /* set canvas background */
-        drawable.draw(canvas);
+        if(showBG)
+            drawable.draw(canvas);
 
         /* and draw text */
         switch(align) {
