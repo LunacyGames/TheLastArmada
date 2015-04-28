@@ -201,7 +201,8 @@ public class MapLoader {
 
     public static boolean hasObject(int x, int y) {
         boolean objectPresent;
-        objectPresent = mapWall.get(x + horizontal * y);
+        /* we allow to walk on action tiles even if they are blocked */
+        objectPresent = mapWall.get(x + horizontal * y) & (!tileHasAction(x, y));
         return objectPresent;
     }
 
@@ -220,5 +221,29 @@ public class MapLoader {
                 return Interpreter.execScript(tile.getActionScript());
         }
         return false;
+    }
+
+    public static int getCurrentMapCode() {
+        switch(amap) {
+            case VILLAGE:
+                return 2;
+            case DUNGEON:
+                return 1;
+            case OVERWORLD:
+                return 0;
+        }
+        return 1;
+    }
+
+    public static MapType getMapType(int i) {
+        switch(i) {
+            case 0:
+                return MapType.OVERWORLD;
+            case 1:
+                return MapType.DUNGEON;
+            case 2:
+                return MapType.VILLAGE;
+        }
+        return MapType.DUNGEON;
     }
 }

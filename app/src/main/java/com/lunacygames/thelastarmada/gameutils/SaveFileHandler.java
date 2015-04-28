@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.lunacygames.thelastarmada.gamemap.MapLoader;
-import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.glengine.Camera;
 import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Player;
@@ -115,14 +114,8 @@ public class SaveFileHandler {
                         "\n"
                     );
             /* then the current map */
-            switch(MapLoader.getActiveMap()) {
-                case OVERWORLD:
-                    fOut.write("0\n");
-                    break;
-                case DUNGEON:
-                    fOut.write("1\n");
-                    break;
-            }
+            int currentMap = MapLoader.getCurrentMapCode();
+            fOut.write(currentMap + "\n");
             /* then the game status */
             fOut.write(Integer.toString(GameState.getGameFlags()) + "\n");
             /* then the boss flags */
@@ -169,22 +162,15 @@ public class SaveFileHandler {
             Log.d("LoadSave: ", "Position at " + position[0] + " " + position[1]);
             /* current map */
             s = fileIn.readLine();
-            switch(s) {
-                case "0":
-                    MapLoader.setActiveMap(MapType.OVERWORLD);
-                    break;
-                case "1":
-                    MapLoader.setActiveMap(MapType.DUNGEON);
-                    break;
-                default:
-                    Log.d("Loading: ", "Invalid map type");
-            }
+            MapLoader.setActiveMap(MapLoader.getMapType(Integer.parseInt(s)));
             /* game status */
             s = fileIn.readLine();
             GameState.setGameFlags(Integer.parseInt(s));
             /* boss status */
+            s = fileIn.readLine();
             GameState.setBossFlags(Integer.parseInt(s));
             /* chest status */
+            s = fileIn.readLine();
             GameState.setChestFlags(Integer.parseInt(s));
             /* the rest is the inventory list */
             for(i = 0; i < Inventory.MAX_ITEM_NUMBER; i++) {

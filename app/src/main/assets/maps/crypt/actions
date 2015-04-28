@@ -3,3 +3,8 @@
 27,24,NGS2;GSF2;SAYPriest: The world has been overrun by monsters.;SAYPriest: Aesir is powerless to stop it.;SAYPriest: My hopes is that you can help our cause.
 27,25,NGS2;GSF2;SAYPriest: The world has been overrun by monsters.;SAYPriest: Aesir is powerless to stop it.;SAYPriest: My hopes is that you can help our cause.
 45,34,NBS1;BSF1;SAYTyr: Where is it that you are going?;SAYTyr: You may not leave!;BOStyr
+30,20,NGC1;CSF1;SAYThe chest contained some Potions.;ITA02
+8,24,NGC2;CSF2;SAYThe chest contained some Mana Vials.;ITA32
+25,36,NGC4;CSF4;SAYThe chest contained some Force Vials.;ITA22
+33,36,NGC8;CSF8;SAYThe chest contained some Potions.;ITA03
+45,33,WRP0.7.36

@@ -6,7 +6,10 @@ import com.lunacygames.thelastarmada.gamebattle.ActionEvent;
 import com.lunacygames.thelastarmada.gamebattle.BattleManager;
 import com.lunacygames.thelastarmada.gamebattle.BattleState;
 import com.lunacygames.thelastarmada.gamebattle.Enemy;
+import com.lunacygames.thelastarmada.gamemap.MapLoader;
+import com.lunacygames.thelastarmada.gamemap.MapType;
 import com.lunacygames.thelastarmada.gameui.TopMessage;
+import com.lunacygames.thelastarmada.glengine.Camera;
 import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Player;
 import com.lunacygames.thelastarmada.player.PlayerList;
@@ -43,8 +46,11 @@ public class Interpreter {
             } else if(s.equalsIgnoreCase("NBS")) {
                 /* not boss flag set */
                 flag = Integer.parseInt(cmd.substring(3));
-                if(GameState.getBossFlag(flag))
+                if (GameState.getBossFlag(flag))
                     return false;
+            } else if(s.equalsIgnoreCase("BSF")) {
+                /* boss set flag */
+                GameState.setBossFlags(Integer.parseInt(cmd.substring(3)));
             } else {
                 doCommand(cmd);
             }
@@ -84,9 +90,32 @@ public class Interpreter {
             TopMessage.showMessage(split[1]);
         } else if(split[0].equalsIgnoreCase("ITM")) {
             processItem(split[1]);
+        } else if(split[0].equalsIgnoreCase("WRP")) {
+            /* warp argument is separated by periods (.) */
+            setWarp(split[1]);
+        } else if(split[0].equalsIgnoreCase("ITA")) {
+            int item = Integer.parseInt(split[1].substring(0, 1));
+            int quantity = Integer.parseInt(split[1].substring(1));
+            Inventory.incrementItemCount(item, quantity);
         }else{
             Log.e("Interpreter: ", "bad command " + cmd);
         }
+    }
+
+    private static void setWarp(String cmd) {
+        /* java... if i had a penny every time i ran into asinine issues like this, i'd have
+        * my entire tuition cost paid without breaking a sweat
+        * i mean, seriously, why do you need to split on regexes? i can't think of a reason to
+        * make this a default
+        */
+        String[] args = cmd.split("\\.");
+        for(String s : args)
+            Log.d("warp: ", "arg: " + s);
+        int[] pos = new int[]{Integer.parseInt(args[1]), Integer.parseInt(args[2])};
+        MapType m = MapLoader.getMapType(Integer.parseInt(args[0]));
+        MapLoader.setActiveMap(m);
+        Camera.setPosition(pos);
+        GameState.setGameState(GameStateList.LOAD_MAP);
     }
 
     private static void checkForNoEnemies() {
@@ -148,8 +177,7 @@ public class Interpreter {
                 Enemy.reduceEnemyCount();
                 message = targetName + " was defeated by " + sourceName + "!";
                 TopMessage.showMessage(message);
-                for(String s : Enemy.getEnemyList().get(target - tagOffset).getOnDefeatScript())
-                    Interpreter.doCommand(s);
+                Interpreter.execScript(Enemy.getEnemyList().get(target - tagOffset).getOnDefeatScript());
             } else {
                 message = targetName + " was dealt " +
                         Integer.toString(damage) + " damage by " + sourceName + "!";
@@ -256,8 +284,7 @@ public class Interpreter {
                 if(hp == 0) {
                     Enemy.reduceEnemyCount();
                     TopMessage.showMessage("Aslaug has braved and defeated " + targetName + "!");
-                    for(String s: Enemy.getEnemyList().get(target - 4).getOnDefeatScript())
-                        Interpreter.doCommand(s);
+                    Interpreter.execScript(Enemy.getEnemyList().get(target - 4).getOnDefeatScript());
                     return;
                 }
             } else {
@@ -314,9 +341,7 @@ public class Interpreter {
                      * eldritch abominations, so they may as well divert a bit of their attention
                      * to get that fancy item from the corpse of the monster they just defeated.
                      */
-                    for(String s : Enemy.getEnemyList().get(target - 4).getOnDefeatScript()) {
-                        Interpreter.doCommand(s);
-                    }
+                    Interpreter.execScript(Enemy.getEnemyList().get(target - 4).getOnDefeatScript());
                     return;
                 }
 

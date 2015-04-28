@@ -2,8 +2,6 @@ package com.lunacygames.thelastarmada.gamebattle;
 
 import android.util.Log;
 
-import com.lunacygames.thelastarmada.gameui.TopMessage;
-import com.lunacygames.thelastarmada.gameutils.Interpreter;
 import com.lunacygames.thelastarmada.player.PlayerList;
 import com.lunacygames.thelastarmada.gameui.UIHandler;
 
@@ -21,6 +19,7 @@ public class BattleManager {
 
     public static void reset() {
         state = BattleState.START;
+        mandatory = false;
     }
 
     public static void setMandatory(boolean m) {

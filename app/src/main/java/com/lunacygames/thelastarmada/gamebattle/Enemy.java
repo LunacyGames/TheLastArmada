@@ -27,7 +27,7 @@ public class Enemy {
     private int[] texture;
     private ArrayList<String> actionList;
     private float scale;
-    private ArrayList<String> ondefeat;
+    private String ondefeat;
 
 
     private String name;
@@ -89,10 +89,7 @@ public class Enemy {
 
             /* defeat script */
             s = read.readLine();
-            ondefeat = new ArrayList<String>();
-            for(String action : s.split(";")) {
-                ondefeat.add(action);
-            }
+            ondefeat = s;
 
             /* max stats */
             this.max_hp = this.hp;
@@ -146,7 +143,7 @@ public class Enemy {
         return name;
     }
 
-    public ArrayList<String> getOnDefeatScript() {
+    public String getOnDefeatScript() {
         return this.ondefeat;
     }
 

@@ -241,8 +241,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                                 && (ypos < Camera.getPan()[1] + vsprites * tilesize))
                             e.onDraw(gl);
                     }
-                    /* if we finished rendering the first layer, then draw the player */
-                    if(i == 0) PlayerList.onDraw(gl);
+                    /* if we finished rendering the second layer, then draw the player */
+                    if(i == 1) PlayerList.onDraw(gl);
                 }
                 /* restore OpenGL stack */
                 for(int i = 0; i < 3; i++) gl.glPopMatrix();
