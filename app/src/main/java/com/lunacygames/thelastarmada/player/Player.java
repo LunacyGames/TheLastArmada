@@ -42,7 +42,7 @@ public class Player {
     public Player(String name, ArrayList<int[]> texture) {
         this.magic = new ArrayList<Magic>();
         this.name = name;
-        this.texture = new ArrayList<>(texture);
+        this.texture = new ArrayList<int[]>(texture);
         this.exp = exp;
         this.level = level;
     }
