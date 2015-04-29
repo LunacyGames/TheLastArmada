@@ -77,6 +77,12 @@ public class UIHandler {
             case MENU:
                 createMenuUI(context, gl);
                 break;
+            case VICTORY:
+                createVictoryScreen(context, gl);
+                break;
+            case GAME_OVER:
+                createGameOverUI(context, gl);
+                break;
 
             case NONE:
                 /* empty UI */
@@ -95,7 +101,7 @@ public class UIHandler {
         int w = PlatformData.getScreenWidth();
 
         float[] size = new float[]{w, h};
-        float[] position = new float[]{0.05f*h, 0};
+        float[] position = new float[]{0, 0.05f*h};
         ui = new ArrayList<UIWidget>();
 
         /*background is blank*/
@@ -138,6 +144,51 @@ public class UIHandler {
             public void onMotionEvent(MotionEvent e, UIWidget w) {
                 GameState.setGameState(GameStateList.SAVE_GAME);
                 SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
+            }
+        });
+        ui.add(widg);
+    }
+
+    /**
+     * Create Victory Screen
+     * @param context   application context
+     * @param gl
+     */
+    private static void createVictoryScreen(Context context, GL10 gl){
+        int h = PlatformData.getScreenHeight();
+        int w = PlatformData.getScreenWidth();
+
+        float[] size = new float[]{w, h};
+        float[] position = new float[]{0, 0.05f*h};
+        ui = new ArrayList<UIWidget>();
+
+        /*background is blank*/
+        int[] tex = TextureHandler.createTextureFromString(context, gl, " ", true,
+                h, w, TextureHandler.TextAlign.ALIGN_LEFT);
+        UIWidget widg = new UIWidget("", tex, DEFAULT_TAG, 0, 0, size, null);
+        ui.add(widg);
+
+        /* title */
+        size = new float[]{w, 0.1f * h};
+        tex = TextureHandler.createTextureFromString(context, gl, "Battle Victory!", false,
+                (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+        widg = new UIWidget("Victory Screen", tex, DEFAULT_TAG, position[0], position[1],
+                size, null);
+        ui.add(widg);
+
+        /*create the player list*/
+        makePlayerList(context, gl);
+
+        /*Accept button*/
+        size = new float[]{0.2f*w, 0.15f*h};
+        position = new float[]{0.8f*w, 0.8f*h};
+        tex = TextureHandler.createTextureFromString(context, gl, "Accept", false, (int)size[1],
+                (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+        widg = new UIWidget("Accept", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
+            @Override
+            public void onMotionEvent(MotionEvent e, UIWidget w) {
+                SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
+                GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
             }
         });
         ui.add(widg);
@@ -212,6 +263,87 @@ public class UIHandler {
             position[0]+= 0.15f*w;
             position[1] = 0.35f*h;
         }
+
+
+        /*create Item List*/
+        Bitmap potion = TextureHandler.loadBitmap(context, "extras/potion.png");
+        Bitmap concoction = TextureHandler.loadBitmap(context, "extras/concoction.png");
+        Bitmap forcevial = TextureHandler.loadBitmap(context, "extras/forcevial.png");
+        Bitmap manavial = TextureHandler.loadBitmap(context, "extras/manavial.png");
+        ArrayList<int[]> itemTexs = new ArrayList<int[]>();
+        int[] potTex = TextureHandler.createTexture(potion, gl);
+        itemTexs.add(potTex);
+        int[] concTex = TextureHandler.createTexture(concoction, gl);
+        itemTexs.add(concTex);
+        int[] forcTex = TextureHandler.createTexture(forcevial, gl);
+        itemTexs.add(forcTex);
+        int[] manaTex = TextureHandler.createTexture(manavial, gl);
+        itemTexs.add(manaTex);
+
+        /*add potion textures to screen*/
+        size = new float[]{0.05f*w, 0.05f*w};
+        position = new float[]{0.7f*w, 0.1f*h};
+        for(int[] tex : itemTexs){
+            UIWidget widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
+            ui.add(widg);
+            position[1] += 0.1f*h;
+        }
+
+        size = new float[]{0.1f*w, 0.025f*w};
+        position = new float[]{0.75f*w, 0.1f*h};
+        String[] potNames = new String[]{"Potion", "Concoction", "Force Vial", "Mana Vial"};
+        int index = 0;
+        for(String name : potNames){
+            int[] tex = TextureHandler.createTextureFromString(context, gl, name, false, (int)size[1],
+                    (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+            UIWidget widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
+            ui.add(widg);
+            position[1] += 0.05f*h;
+            tex = TextureHandler.createTextureFromString(context, gl,
+                    "x "+Integer.toString(Inventory.getItemCount(index)), false, (int)size[1],
+                    (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+            widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
+            ui.add(widg);
+            position[1] += 0.05f*h;
+            index++;
+        }
+
+    }
+
+    /**
+     *
+     * Create Game Over UI
+     * @param context
+     * @param gl
+     */
+    private static void createGameOverUI(Context context, GL10 gl){
+        int h = PlatformData.getScreenHeight();
+        int w = PlatformData.getScreenWidth();
+
+        UIWidget widget;
+        float[] size = new float[]{w,0.4f*w};
+        float[] position = new float[]{0.5f*w, 0.5f*h};
+
+
+        int[] tex = TextureHandler.createTextureFromString(context, gl, "Game Over", false,
+                (int)size[1], w, TextureHandler.TextAlign.ALIGN_CENTER);
+        widget = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
+        ui.add(widget);
+
+        position[1] = 0.7f*h;
+        size = new float[]{0.5f*w, 0.1f*w};
+
+        tex = TextureHandler.createTextureFromString(context, gl, "Return to Main Menu", false,
+                (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+
+        widget = new UIWidget("Accept", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
+            @Override
+            public void onMotionEvent(MotionEvent e, UIWidget w) {
+                SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
+                GameState.setGameState(GameStateList.INIT);
+            }
+        });
+        ui.add(widget);
     }
 
     /**
@@ -366,7 +498,6 @@ public class UIHandler {
                 public void onMotionEvent(MotionEvent e, UIWidget w) {
                     if(SoundEngine.getInstance().isPlayingEffect()) return;
                     if(e.getAction() != MotionEvent.ACTION_UP) {
-                        SoundEngine.getInstance().playSoundEffect("sounds/effect/reject.ogg");
                         return;
                     }
                     if(BattleManager.getState() == BattleState.SELECT_TARGET) {
