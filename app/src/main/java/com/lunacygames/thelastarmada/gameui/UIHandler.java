@@ -92,16 +92,34 @@ public class UIHandler {
     private static void createMenuUI(Context context, GL10 gl){
         int h = PlatformData.getScreenHeight();
         int w = PlatformData.getScreenWidth();
+
+        float[] size = new float[]{w, h};
+        float[] position = new float[]{0, 0};
         ui = new ArrayList<UIWidget>();
+
+        /*background is blank*/
+        int[] tex = TextureHandler.createTextureFromString(context, gl, " ", true,
+                h, w, TextureHandler.TextAlign.ALIGN_LEFT);
+        UIWidget widg = new UIWidget("", tex, DEFAULT_TAG, 0, 0, size, null);
+        ui.add(widg);
+
+        /* title */
+        size = new float[]{w, 0.1f * h};
+        tex = TextureHandler.createTextureFromString(context, gl, "Game Menu", false,
+                (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+        widg = new UIWidget("menu", tex, DEFAULT_TAG, position[0], position[1],
+                size, null);
+        ui.add(widg);
+
         /*create the player list*/
         makePlayerList(context, gl);
 
         /*back button*/
-        float[] size = new float[]{0.2f*w, 0.075f*w};
-        float[] position = new float[]{0.8f*w, 0.8f*h};
-        int[] tex = TextureHandler.createTextureFromString(context, gl, "Back", false, (int)size[1],
-                (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
-        UIWidget widg = new UIWidget("Back", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
+        size = new float[]{0.2f*w, 0.15f*h};
+        position = new float[]{0.8f*w, 0.8f*h};
+        tex = TextureHandler.createTextureFromString(context, gl, "Back", true, (int)size[1],
+                (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
+        widg = new UIWidget("Back", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
             @Override
             public void onMotionEvent(MotionEvent e, UIWidget w) {
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
@@ -111,8 +129,8 @@ public class UIHandler {
 
         /*save button*/
         position = new float[]{0.8f*w, 0.6f*h};
-        tex = TextureHandler.createTextureFromString(context, gl, "Save", false, (int)size[1],
-                (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+        tex = TextureHandler.createTextureFromString(context, gl, "Save", true, (int)size[1],
+                (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widg = new UIWidget("Save", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
             @Override
             public void onMotionEvent(MotionEvent e, UIWidget w) {
@@ -131,26 +149,17 @@ public class UIHandler {
         int h = PlatformData.getScreenHeight();
         int w = PlatformData.getScreenWidth();
 
-        ui = new ArrayList<UIWidget>();
         int[] texture;
         UIWidget widget;
-        float size[] = new float[2];
-        /* background image */
-        size[0] = w;
-        size[1] = 1440.0f * w / 1920.0f;
-
-        /*background is blank*/
-        texture = TextureHandler.createTextureFromString(context, gl, " ", true, h, w, TextureHandler.TextAlign.ALIGN_LEFT);
-        widget = new UIWidget("", texture, DEFAULT_TAG, 0, 0, size, null);
-        ui.add(widget);
+        float size[];
 
         /* character sprites*/
         size = new float[]{0.1f * w, 0.1f * w};
         float[] position = {
-                0.10f * w, 0.10f * h,
-                0.25f * w, 0.10f * h,
-                0.40f * w, 0.10f * h,
-                0.55f * w, 0.10f * h};
+                0.10f * w, 0.15f * h,
+                0.25f * w, 0.15f * h,
+                0.40f * w, 0.15f * h,
+                0.55f * w, 0.15f * h};
         float xpos;
         int tag = 0;
 
@@ -162,7 +171,7 @@ public class UIHandler {
             ui.add(widget);
             tag++;
         }
-        size = new float[]{0.1f*w, 0.03f*w};
+        size = new float[]{0.1f*w, 0.05f*h};
         /*create label textures*/
         position = new float[]{0.0f*w, 0.42f*h};
         String[] lbls = {"LVL","HP","ATK","DEF","MAG","RES","SPD"};

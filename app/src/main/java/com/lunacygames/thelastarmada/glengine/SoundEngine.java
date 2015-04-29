@@ -14,6 +14,7 @@ public class SoundEngine {
 
     private MediaPlayer bgMusic;
     private MediaPlayer soundEffect;
+    private String playback;
 
     private static SoundEngine ourInstance = new SoundEngine();
     private Context context;
@@ -25,6 +26,7 @@ public class SoundEngine {
     private SoundEngine() {
         bgMusic = new MediaPlayer();
         soundEffect = new MediaPlayer();
+        playback = "";
     }
 
     public void setContext(Context context) {
@@ -32,6 +34,8 @@ public class SoundEngine {
     }
 
     public void playBGMusic(String file) {
+        if(playback.equalsIgnoreCase(file)) return;
+        playback = file;
         bgMusic.release();
         try {
             AssetFileDescriptor fildes = context.getAssets().openFd(file);

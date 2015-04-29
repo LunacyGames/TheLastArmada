@@ -168,7 +168,7 @@ public class Camera {
                 return;
             }
             /* check if we enter into a battle */
-            if(!checkIfBattle(0.8f)) return;
+            if(!checkIfBattle(0.36f)) return;
 
             /* force the player into an idle state */
             PlayerList.setPlayerWalking(false);
