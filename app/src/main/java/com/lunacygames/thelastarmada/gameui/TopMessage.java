@@ -98,7 +98,7 @@ public class TopMessage {
 
         /* before making a new one */
         texture =
-                TextureHandler.createTextureFromString(context, gl, message, (int)(0.05 * height),
+                TextureHandler.createTextureFromString(context, gl, message, true, (int)(0.05 * height),
                         width, TextureHandler.TextAlign.ALIGN_CENTER);
 
 
