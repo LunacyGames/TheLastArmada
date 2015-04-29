@@ -135,8 +135,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 for(Player p : PlayerList.getPlayerList()) {
                     p.resetStats();
                 }
-                /* todo: victory show screen */
-                GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
+                UIHandler.setActive(UIList.VICTORY);
+                UIHandler.loadUI(context, gl);
+                GameState.setGameState(GameStateList.BATTLE_VICTORY_SCREEN);
                 break;
             case LOAD_OVERWORLD_UI:
                 SoundEngine.getInstance().playBGMusic(MapLoader.getBgMusic());
@@ -162,6 +163,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 }
                 renderScreen(gl);
                 break;
+            case TO_BOSS_BATTLE:
+                break;
             case BATTLE:
                 UIHandler.refresh(this.context, gl);
                 if(BattleManager.getState() == BattleState.START)
@@ -180,6 +183,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 SaveFileHandler.storeSaveFile(context);
                 TopMessage.showMessage("Your game has been saved!");
                 GameState.setGameState(GameStateList.GAME_MENU);
+                break;
+            case BATTLE_VICTORY_SCREEN:
+                renderScreen(gl);
+                break;
+            case TO_GAME_OVER:
+                UIHandler.setActive(UIList.GAME_OVER);
+                UIHandler.loadUI(context, gl);
+                GameState.setGameState(GameStateList.GAME_OVER_LOSS);
+                break;
+            case GAME_OVER_LOSS:
+                renderScreen(gl);
                 break;
         }
     }
