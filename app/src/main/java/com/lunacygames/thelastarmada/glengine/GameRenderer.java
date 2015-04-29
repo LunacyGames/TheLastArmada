@@ -168,6 +168,19 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                     BattleManager.updateState(0, null);
                 renderScreen(gl);
                 break;
+            case TO_MENU:
+                UIHandler.setActive(UIList.MENU);
+                UIHandler.loadUI(context, gl);
+                GameState.setGameState(GameStateList.GAME_MENU);
+                break;
+            case GAME_MENU:
+                renderScreen(gl);
+                break;
+            case SAVE_GAME:
+                SaveFileHandler.storeSaveFile(context);
+                TopMessage.showMessage("Your game has been saved!");
+                GameState.setGameState(GameStateList.GAME_MENU);
+                break;
         }
     }
 
