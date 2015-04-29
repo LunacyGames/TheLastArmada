@@ -52,23 +52,16 @@ public class SoundEngine {
     }
 
     public void playSoundEffect(String file) {
-        setPlayback(soundEffect, file, false);
-    }
-
-    private void
-    setPlayback(MediaPlayer player, String file, boolean loop) {
-        if(player != null) {
-            Log.d("MediaPlayer: ", "Releasing MediaPlayer");
-            player.release();
-        }
+        if(isPlayingEffect()) return;
+        soundEffect.release();
         try {
             AssetFileDescriptor fildes = context.getAssets().openFd(file);
-            player = new MediaPlayer();
-            player.setDataSource(fildes.getFileDescriptor(),
+            soundEffect = new MediaPlayer();
+            soundEffect.setDataSource(fildes.getFileDescriptor(),
                     fildes.getStartOffset(), fildes.getLength());
-            player.prepare();
-            player.setLooping(loop);
-            player.start();
+            soundEffect.prepare();
+            soundEffect.setLooping(false);
+            soundEffect.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,5 +75,9 @@ public class SoundEngine {
     public void onResume() {
         bgMusic.start();
         soundEffect.start();
+    }
+
+    public boolean isPlayingEffect() {
+        return soundEffect.isPlaying();
     }
 }

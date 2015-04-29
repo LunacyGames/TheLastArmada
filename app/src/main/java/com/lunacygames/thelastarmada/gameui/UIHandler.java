@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import com.lunacygames.thelastarmada.glengine.Camera;
 import com.lunacygames.thelastarmada.gameutils.GameState;
 import com.lunacygames.thelastarmada.gameutils.GameStateList;
+import com.lunacygames.thelastarmada.glengine.SoundEngine;
 import com.lunacygames.thelastarmada.player.Inventory;
 import com.lunacygames.thelastarmada.player.Magic;
 import com.lunacygames.thelastarmada.gameutils.PlatformData;
@@ -94,7 +95,7 @@ public class UIHandler {
         int w = PlatformData.getScreenWidth();
 
         float[] size = new float[]{w, h};
-        float[] position = new float[]{0, 0};
+        float[] position = new float[]{0.05f*h, 0};
         ui = new ArrayList<UIWidget>();
 
         /*background is blank*/
@@ -117,11 +118,12 @@ public class UIHandler {
         /*back button*/
         size = new float[]{0.2f*w, 0.15f*h};
         position = new float[]{0.8f*w, 0.8f*h};
-        tex = TextureHandler.createTextureFromString(context, gl, "Back", true, (int)size[1],
+        tex = TextureHandler.createTextureFromString(context, gl, "Back", false, (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widg = new UIWidget("Back", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
             @Override
             public void onMotionEvent(MotionEvent e, UIWidget w) {
+                SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
             }
         });
@@ -129,12 +131,13 @@ public class UIHandler {
 
         /*save button*/
         position = new float[]{0.8f*w, 0.6f*h};
-        tex = TextureHandler.createTextureFromString(context, gl, "Save", true, (int)size[1],
+        tex = TextureHandler.createTextureFromString(context, gl, "Save", false, (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widg = new UIWidget("Save", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
             @Override
             public void onMotionEvent(MotionEvent e, UIWidget w) {
                 GameState.setGameState(GameStateList.SAVE_GAME);
+                SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
             }
         });
         ui.add(widg);
@@ -315,6 +318,7 @@ public class UIHandler {
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
                         //PlayerList.setState(PlayerState.IDLE);
                         GameState.setGameState(GameStateList.TO_MENU);
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                     }
                 });
         ui.add(widget);
@@ -360,10 +364,15 @@ public class UIHandler {
                     size, new UICallback() {
                 @Override
                 public void onMotionEvent(MotionEvent e, UIWidget w) {
-                    if(e.getAction() != MotionEvent.ACTION_UP) return;
+                    if(SoundEngine.getInstance().isPlayingEffect()) return;
+                    if(e.getAction() != MotionEvent.ACTION_UP) {
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/reject.ogg");
+                        return;
+                    }
                     if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                         currentAction.setTarget(w.getTag());
                         BattleManager.updateState(0, currentAction);
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                         UIHandler.resetGlow();
                     }
                 }
@@ -384,10 +393,16 @@ public class UIHandler {
                     new UICallback() {
                         @Override
                         public void onMotionEvent(MotionEvent e, UIWidget w) {
+                            if(SoundEngine.getInstance().isPlayingEffect()) return;
                             if(BattleManager.getState() == BattleState.SELECT_TARGET) {
                                 currentAction.setTarget(w.getTag());
                                 BattleManager.updateState(0, currentAction);
                                 UIHandler.resetGlow();
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/accept.ogg");
+                            } else {
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/reject.ogg");
                             }
                         }
                     });
@@ -439,6 +454,7 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
+                        if(SoundEngine.getInstance().isPlayingEffect()) return;
                         if(e.getAction() == MotionEvent.ACTION_UP) {
                             if(BattleManager.getState() == BattleState.SELECT_ACTION) {
                                 currentAction = new ActionEvent("ATK");
@@ -450,6 +466,11 @@ public class UIHandler {
                                 BattleManager.updateState(1, null);
                                 UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
                                 UIHandler.showWidgetByTag(BACK_BUTTON_TAG);
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/accept.ogg");
+                            } else {
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/reject.ogg");
                             }
                         }
                     }
@@ -463,16 +484,23 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
+                        if(SoundEngine.getInstance().isPlayingEffect()) return;
                         if(e.getAction() == MotionEvent.ACTION_UP) {
                                         /* if we are not selecting an action, bail out */
-                            if(BattleManager.getState() != BattleState.SELECT_ACTION)
+                            if(BattleManager.getState() != BattleState.SELECT_ACTION) {
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/reject.ogg");
                                 return;
+                            }
                                         /* if a player has no magic, return */
                             if(!PlayerList.getPlayerList().get(
                                     PlayerList.getPlayer()).hasMagic()) {
                                 BattleManager.setState(BattleState.SELECT_ACTION);
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/reject.ogg");
                                 return;
                             }
+                            SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                             currentAction = new ActionEvent("MAG");
                             currentAction.setPlayer(PlayerList.getPlayer());
                             int speed =
@@ -496,6 +524,7 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
+                        if(SoundEngine.getInstance().isPlayingEffect()) return;
                         if(e.getAction() == MotionEvent.ACTION_UP) {
                             currentAction = new ActionEvent("ITM");
                             currentAction.setPlayer(PlayerList.getPlayer());
@@ -508,6 +537,7 @@ public class UIHandler {
                             UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
                             UIHandler.showWidgetByTag(INVENTORY_TAG);
                             UIHandler.showWidgetByTag(BACK_BUTTON_TAG);
+                            SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                         }
                     }
                 });
@@ -521,7 +551,10 @@ public class UIHandler {
                     new UICallback() {
                         @Override
                         public void onMotionEvent(MotionEvent e, UIWidget w) {
+                            if(SoundEngine.getInstance().isPlayingEffect()) return;
                             if (e.getAction() == MotionEvent.ACTION_UP) {
+                                SoundEngine.getInstance().
+                                        playSoundEffect("sounds/effect/accept.ogg");
                                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
                                 UIHandler.hideWidgetByTag(ACTION_MENU_TAG);
                             }
@@ -549,13 +582,19 @@ public class UIHandler {
                                 @Override
                                 public void onMotionEvent(MotionEvent e, UIWidget w) {
                                     Log.d("UIHandler", "clicked " + w.getCaption());
+                                    if(SoundEngine.getInstance().isPlayingEffect()) return;
                                     if(e.getAction() != MotionEvent.ACTION_UP) return;
                                     /* failsafe if we are not selecting magic */
-                                    if(BattleManager.getState() != BattleState.SELECT_MAGIC) return;
+                                    if(BattleManager.getState() != BattleState.SELECT_MAGIC) {
+                                        SoundEngine.getInstance().
+                                                playSoundEffect("sounds/effect/reject.ogg");
+                                        return;
+                                    }
                                     currentAction.setExtraParameter(w.getCaption());
                                     for(int i = 0; i < PlayerList.getPlayerList().size(); i++)
                                         UIHandler.hideWidgetByTag(SPELL_TAG + i);
-
+                                    SoundEngine.getInstance().
+                                            playSoundEffect("sounds/effect/accept.ogg");
                                     BattleManager.updateState(0, null);
                                 }
                             });
@@ -579,13 +618,20 @@ public class UIHandler {
                 @Override
                 public void onMotionEvent(MotionEvent e, UIWidget w) {
                     /* Need to check we are depressing the button */
-                    if(e.getAction() != MotionEvent.ACTION_UP) return;
+                    if(SoundEngine.getInstance().isPlayingEffect()) return;
+                    if(e.getAction() != MotionEvent.ACTION_UP) {
+                        return;
+                    }
                     /* Failsafe for incorrect action */
-                    if(BattleManager.getState() != BattleState.SELECT_ITEM) return;
+                    if(BattleManager.getState() != BattleState.SELECT_ITEM) {
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/reject.ogg");
+                        return;
+                    }
                     /* Hack: we put the item ID on the caption */
                     int item = Integer.parseInt(w.getCaption());
                     /* Ensure we have the item */
                     if(Inventory.getItemCount(item) == 0) {
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/reject.ogg");
                         TopMessage.showMessage("You have no more "
                                 + Inventory.getItemName(item)+ "s!");
                         return;
@@ -594,6 +640,7 @@ public class UIHandler {
                     currentAction.setExtraParameter(w.getCaption() + ",");
                     UIHandler.hideWidgetByTag(INVENTORY_TAG);
                     BattleManager.updateState(0, null);
+                    SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                 }
             });
             widget.setVisible(false);
@@ -609,7 +656,9 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
+                        if(SoundEngine.getInstance().isPlayingEffect()) return;
                         if(e.getAction() != MotionEvent.ACTION_UP) return;
+                        SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                         BattleState s = BattleManager.revertAction();
                         switch(s) {
                             case SELECT_MAGIC:
@@ -637,8 +686,9 @@ public class UIHandler {
         /* start creating start screen UI */
         ui = new ArrayList<UIWidget>();
         /* prepare the logo */
-        float size[] = {10.0f * h / 15.0f, 0.5f * h};
+
         Bitmap logo = TextureHandler.loadBitmap(context, "titlescreen/logo.png");
+        float size[] = {((float)logo.getHeight() * h) / ((float)logo.getWidth()), 0.5f * h};
         int[] texture = TextureHandler.createTexture(logo, gl);
         float y = (0.8f*h - size[1])/2;
         float x = (w - size[0])/2;
@@ -663,6 +713,7 @@ public class UIHandler {
                 if(e.getAction() == MotionEvent.ACTION_DOWN) {
                     Log.d("UI: ", "start pressed!");
                     GameState.setGameState(GameStateList.LOAD_MAP);
+                    SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                 }
             }
         });
