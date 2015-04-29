@@ -63,7 +63,7 @@ public class Player {
     }
 
     public void resetStats() {
-        System.arraycopy(max_stats, 1, base_stats, 1, max_stats.length - 1);
+        System.arraycopy(max_stats, 0, base_stats, 0, max_stats.length);
     }
 
     public void setGrowthPercent(double[] growth_percent) {
