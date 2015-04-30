@@ -28,6 +28,11 @@ public class PlayerList {
     private static boolean isWalking = false;
 
 
+    /**
+     * Initialize player list
+     * @param context
+     * @param gl
+     */
     public static void initPlayerList(Context context, GL10 gl) {
         players = new ArrayList<Player>();
         textures = new ArrayList<int[]>();
@@ -77,6 +82,11 @@ public class PlayerList {
         PlayerList.state = PlayerState.IDLE;
     }
 
+    /**
+     * TODO: What does this do?
+     * @param context
+     * @param gl
+     */
     public static void loadPlayerSprite(Context context, GL10 gl) {
         Bitmap bmp = TextureHandler.loadBitmap(context, "characters/lothbrok.png");
         ArrayList<Bitmap> sprites = TextureHandler.loadTiles(bmp, 4, 3);
@@ -91,6 +101,10 @@ public class PlayerList {
         m = new MapEntity(textures.get(0), hpos, vpos * sizeX, size);
     }
 
+    /**
+     * TODO:what does this do?
+     * @param gl
+     */
     public static void onDraw(GL10 gl) {
         int width = PlatformData.getScreenWidth();
         int height = PlatformData.getScreenHeight();
