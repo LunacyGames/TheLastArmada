@@ -94,7 +94,7 @@ public class UIHandler {
     /**
      * Create Menu UI
      * @param context   application context
-     * @param gl
+     * @param gl        OpenGL context.
      */
     private static void createMenuUI(Context context, GL10 gl){
         int h = PlatformData.getScreenHeight();
@@ -151,8 +151,8 @@ public class UIHandler {
 
     /**
      * Create Victory Screen
-     * @param context   application context
-     * @param gl
+     * @param context   Application context.
+     * @param gl        OpenGL context.
      */
     private static void createVictoryScreen(Context context, GL10 gl){
         int h = PlatformData.getScreenHeight();
@@ -196,8 +196,8 @@ public class UIHandler {
 
     /**
      * create plater list to use in menu screen and end of battle screen
-     * @param context
-     * @param gl
+     * @param context   Application context.
+     * @param gl        OpenGL context.
      */
     private static void makePlayerList(Context context, GL10 gl){
         int h = PlatformData.getScreenHeight();
@@ -313,8 +313,8 @@ public class UIHandler {
     /**
      *
      * Create Game Over UI
-     * @param context
-     * @param gl
+     * @param context   Application context.
+     * @param gl        OpenGL context.
      */
     private static void createGameOverUI(Context context, GL10 gl){
         int h = PlatformData.getScreenHeight();
@@ -812,6 +812,11 @@ public class UIHandler {
         ui.add(widget);
     }
 
+    /**
+     * Creates the Start Screen UI
+     * @param context   Application context.
+     * @param gl        OpenGL context.
+     */
     private static void uiCreateStart(Context context, GL10 gl) {
         int h = PlatformData.getScreenHeight();
         int w = PlatformData.getScreenWidth();
