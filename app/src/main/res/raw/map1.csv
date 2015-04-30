@@ -2,7 +2,7 @@ tilesets/overworld.png
 10,10
 maps/overworld/layer1.csv
 maps/overworld/layer2.csv
-maps/overworld/layer2.csv
+maps/overworld/layer3.csv
 eyeball,bat,rat
 maps/overworld/actions
 maps/overworld/battleground.png

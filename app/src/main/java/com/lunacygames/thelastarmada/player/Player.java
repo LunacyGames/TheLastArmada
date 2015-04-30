@@ -49,8 +49,8 @@ public class Player {
     }
 
     /**
-     * set the rate of stat growth for the player
-     * @param rate TODO: what are these?
+     * Set the rate of stat growth for the player
+     * @param rate Growth rate for the player
      */
     public void setGrowthRate(int[] rate) {
         this.growth_rate = new int[6];
@@ -83,8 +83,8 @@ public class Player {
     }
 
     /**
-     * TODO: what does this do?
-     * @param growth_percent
+     * Set the growth percent rate for each stat of the player
+     * @param growth_percent Growth rate as a number between 0 and 1, inclusive.
      */
     public void setGrowthPercent(double[] growth_percent) {
         this.growth_percent = new double[6];
@@ -278,8 +278,8 @@ public class Player {
     }
 
     /**
-     * TODO: What does this do?
-     * @param exp
+     * Assign experience to a player
+     * @param exp int Experience amount
      */
     public void setExp(int exp) {
         this.exp = exp;
@@ -310,8 +310,8 @@ public class Player {
     }
 
     /**
-     * TODO: what does this do?
-     * @return
+     * Get the current amount of experience a player has.
+     * @return int current amount of experience
      */
     public int getExp() {
         return exp;

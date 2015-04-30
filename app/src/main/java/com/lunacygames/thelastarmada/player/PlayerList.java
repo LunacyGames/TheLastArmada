@@ -13,7 +13,11 @@ import java.util.ArrayList;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Created by zeus on 3/10/15.
+ * Keeps a record of the players.
+ *
+ * @author Orlando Arias
+ * @author Eric Johansen
+ *
  */
 public class PlayerList {
 
@@ -83,9 +87,9 @@ public class PlayerList {
     }
 
     /**
-     * TODO: What does this do?
-     * @param context
-     * @param gl
+     * Loads the battle/menu sprite of the player from the sprite sheet.
+     * @param context Application context
+     * @param gl OpenGL context
      */
     public static void loadPlayerSprite(Context context, GL10 gl) {
         Bitmap bmp = TextureHandler.loadBitmap(context, "characters/lothbrok.png");
@@ -102,8 +106,8 @@ public class PlayerList {
     }
 
     /**
-     * TODO:what does this do?
-     * @param gl
+     * Draw player sprite on the screen.
+     * @param gl OpenGL context
      */
     public static void onDraw(GL10 gl) {
         int width = PlatformData.getScreenWidth();

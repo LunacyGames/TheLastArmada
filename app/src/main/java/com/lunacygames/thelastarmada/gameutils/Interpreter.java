@@ -186,7 +186,7 @@ public class Interpreter {
             TopMessage.showMessage(message);
         } else {
             if(hp == 0) {
-                TopMessage.flushMsgQueue();
+                TopMessage.showMessage(targetName + " was defeated by " + sourceName + "!");
                 TopMessage.showMessage("A party member has been defeated!");
                 GameState.setGameState(GameStateList.TO_GAME_OVER);
                 PlayerList.getPlayerList().get(target).setHp(hp);
@@ -291,7 +291,7 @@ public class Interpreter {
             } else {
                 if(hp == 0) {
                     /* party member dead */
-                    TopMessage.flushMsgQueue();
+                    TopMessage.showMessage(targetName + " was killed by Aslaug!");
                     TopMessage.showMessage("A party member has been defeated!");
                     GameState.setGameState(GameStateList.TO_GAME_OVER);
                     PlayerList.getPlayerList().get(target).setHp(hp);
@@ -359,7 +359,7 @@ public class Interpreter {
                 if(damage <= 0) damage = 1;
                 hp -= damage;
                 if(hp <= 0) {
-                    TopMessage.flushMsgQueue();
+                    TopMessage.showMessage(targetName + " was defeated by " + sourceName + "!");
                     TopMessage.showMessage("A party member has been defeated!");
                     GameState.setGameState(GameStateList.TO_GAME_OVER);
                     PlayerList.getPlayerList().get(target).setHp(0);

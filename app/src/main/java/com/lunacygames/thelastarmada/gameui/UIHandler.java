@@ -32,6 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Orlando Arias
  * @author Eric Johansen
+ * @author Stanislav Ivchenko
  */
 public class UIHandler {
     private static ArrayList<UIWidget> ui;
@@ -322,7 +323,7 @@ public class UIHandler {
 
         ui = new ArrayList<UIWidget>();
         UIWidget widget;
-        float[] size = new float[]{0.75f*w, 0.5f*h};
+        float[] size = new float[]{w, 0.4f*h};
         float[] position = new float[]{(w - size[0])/2.0f, 0};
 
 
@@ -449,7 +450,8 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        //PlayerList.setState(PlayerState.IDLE);
+                        /* can't trigger this if we are walking */
+                        if(PlayerList.isPlayerWalking()) return;
                         GameState.setGameState(GameStateList.TO_MENU);
                         SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                     }

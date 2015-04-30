@@ -119,6 +119,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 /* load save file */
                 SaveFileHandler.loadSaveFile(this.context);
                 GameState.setGameState(GameStateList.TITLE_SCREEN);
+                SoundEngine.getInstance().playBGMusic("sounds/bgmusic/title.ogg");
                 break;
             case TITLE_SCREEN:
                 renderScreen(gl);
@@ -190,6 +191,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             case TO_GAME_OVER:
                 /* wait until the top message disappears */
                 SoundEngine.getInstance().playBGMusic("sounds/bgmusic/gameover.ogg");
+                UIHandler.refresh(this.context, gl);
                 if(!TopMessage.isShown())
                     GameState.setGameState(GameStateList.GAME_OVER_LOSS_A);
                 renderScreen(gl);
