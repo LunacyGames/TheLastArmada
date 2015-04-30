@@ -26,6 +26,10 @@ public class Camera {
     private static int[] old_position;
     private static float delta;
 
+    /**
+     * Set maximum pan distance for camera
+     * @param max TODO: What is this?
+     */
     public static void setMaxPan(float[] max) {
         float x, y;
         x = max[0] - PlatformData.getScreenWidth();
@@ -34,26 +38,44 @@ public class Camera {
         panMax = p;
     }
 
+    /**
+     * TODO deprecated? seems to never be used
+     * @param p
+     */
     public static void setPan(float[] p) {
         pan = p;
     }
 
+    /**
+     * TODO Locks camera on character?
+     */
     public static void lockPan() {
         oldPan = pan.clone();
         delta = 0;
         old_position = position.clone();
     }
 
+    /**
+     * TODO depercated? seems to never be used
+     */
     public static void setDefaultPan() {
         float[] p = {(float)PlatformData.getScreenWidth(), (float)PlatformData.getScreenHeight()};
         pan = p;
         oldPan = p;
     }
 
+    /**
+     * Return pan value array
+     * @return float array with pan values
+     */
     public static float[] getPan() {
         return pan;
     }
 
+    /**
+     * Return maximum pan value array
+     * @return float array with maximum pan values
+     */
     public static float[] getMaxPan() {
         return panMax;
     }
@@ -191,6 +213,11 @@ public class Camera {
         }
     }
 
+    /**
+     * Check if the movement buttons are being held down
+     * If yes, but player can't move, don't play movement animation
+     * If no, camera stays still
+     */
     private static void checkContinuousWalk() {
         if(!PlayerList.isPlayerWalking()) {
             PlayerList.setState(PlayerState.IDLE);
@@ -199,6 +226,10 @@ public class Camera {
         }
     }
 
+    /**
+     * Convert camera location to be based on native screen resolution, not static variables
+     * @param position the camera's current position
+     */
     public static void setPosition(int[] position) {
         /* need to transform the absolute map position into a screen relative position */
         float sizeX = PlatformData.getTileSize();
@@ -212,10 +243,19 @@ public class Camera {
 
     }
 
+    /**
+     * Get camera's current position
+     * @return int[] camera's current position
+     */
     public static int[] getPosition() {
         return position;
     }
 
+    /**
+     * Determines if the character enters a battle
+     * @param probability computed likelyhood of battle
+     * @return True if battle, False if no battle
+     */
     private static boolean checkIfBattle(float probability) {
         /* The Random Number Goddess decides */
         Random rnd = new Random();
