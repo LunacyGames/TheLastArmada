@@ -320,18 +320,19 @@ public class UIHandler {
         int h = PlatformData.getScreenHeight();
         int w = PlatformData.getScreenWidth();
 
+        ui = new ArrayList<UIWidget>();
         UIWidget widget;
-        float[] size = new float[]{w,0.4f*w};
-        float[] position = new float[]{0.5f*w, 0.5f*h};
+        float[] size = new float[]{0.75f*w, 0.5f*h};
+        float[] position = new float[]{(w - size[0])/2.0f, 0};
 
 
         int[] tex = TextureHandler.createTextureFromString(context, gl, "Game Over", false,
-                (int)size[1], w, TextureHandler.TextAlign.ALIGN_CENTER);
+                (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
         widget = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
         ui.add(widget);
 
-        position[1] = 0.7f*h;
-        size = new float[]{0.5f*w, 0.1f*w};
+        size = new float[]{0.5f*w, 0.1f*h};
+        position = new float[]{(w - size[0])/2.0f, 0.7f*h};
 
         tex = TextureHandler.createTextureFromString(context, gl, "Return to Main Menu", false,
                 (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
