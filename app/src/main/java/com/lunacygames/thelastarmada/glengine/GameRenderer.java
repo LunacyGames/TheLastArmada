@@ -132,12 +132,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 GameState.setGameState(GameStateList.LOAD_OVERWORLD_UI);
                 break;
             case BATTLE_VICTORY:
-                /* reset player stats before battle */
+                /* wait for top message */
+                if(!TopMessage.isShown())
+                    GameState.setGameState(GameStateList.BATTLE_VICTORY_SCREEN_A);
+                renderScreen(gl);
+                break;
+            case BATTLE_VICTORY_SCREEN_A:
+                UIHandler.setActive(UIList.VICTORY);
+                UIHandler.loadUI(context, gl);
+                /* reset player stats */
                 for(Player p : PlayerList.getPlayerList()) {
                     p.resetStats();
                 }
-                UIHandler.setActive(UIList.VICTORY);
-                UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.BATTLE_VICTORY_SCREEN);
                 break;
             case LOAD_OVERWORLD_UI:
@@ -203,6 +209,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 GameState.setGameState(GameStateList.GAME_OVER_LOSS);
                 break;
             case GAME_OVER_LOSS:
+                renderScreen(gl);
+                break;
+            case TO_GAME_TBC:
+                UIHandler.setActive(UIList.GAME_TBC);
+                UIHandler.loadUI(context, gl);
+                GameState.setGameState(GameStateList.GAME_TBC);
+                break;
+            case GAME_TBC:
                 renderScreen(gl);
                 break;
         }

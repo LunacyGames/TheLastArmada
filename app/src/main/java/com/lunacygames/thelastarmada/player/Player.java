@@ -25,6 +25,7 @@ public class Player {
     private double[] growth_percent;
     private int[] growth_rate;
     private int[] max_stats;
+    private int[] deltas;
     private ArrayList<Magic> magic;
     private int activeTexture;
 
@@ -44,8 +45,7 @@ public class Player {
         this.magic = new ArrayList<Magic>();
         this.name = name;
         this.texture = new ArrayList<int[]>(texture);
-        this.exp = exp;
-        this.level = level;
+        this.deltas = new int[7];
     }
 
     /**
@@ -80,6 +80,7 @@ public class Player {
      */
     public void resetStats() {
         System.arraycopy(max_stats, 0, base_stats, 0, max_stats.length);
+        deltas = new int[7];
     }
 
     /**
@@ -250,20 +251,25 @@ public class Player {
     public void addExp(int gain) {
         /* the higher the level, the less exp we get */
         int netGain = exp + (int)(gain / Math.pow(level, BASE));
+        deltas = new int[7];
         Random rng = new Random();
         while(netGain >= 100) {
             level++;
+            deltas[0]++;
             TopMessage.showMessage(this.name + " is now level " + Integer.toString(level) + "!");
             netGain -= 100;
             /* on level up, we increase stats according to their growth rates and percents */
             for(int i = 0; i < 6; i++) {
-                if(rng.nextDouble() < growth_percent[i])
+                if(rng.nextDouble() < growth_percent[i]) {
                     /* if the Random Number Goddess favours the player,
                      * they get a nice stat boost */
                     max_stats[i] += growth_rate[i];
-                else
+                    deltas[i + 1] += growth_rate[i];
+                } else {
                     /* otherwise, we are still nice to them, and give them a minor boost */
+                    deltas[i + 1] += 1;
                     max_stats[i] += 1;
+                }
             }
         }
         exp = netGain;
@@ -315,5 +321,9 @@ public class Player {
      */
     public int getExp() {
         return exp;
+    }
+
+    public int[] getDeltas() {
+        return deltas;
     }
 }

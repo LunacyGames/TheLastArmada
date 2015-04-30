@@ -51,6 +51,8 @@ public class Interpreter {
             } else if(s.equalsIgnoreCase("BSF")) {
                 /* boss set flag */
                 GameState.setBossFlags(Integer.parseInt(cmd.substring(3)));
+            } else if(s.equalsIgnoreCase("TBC")) {
+                GameState.setGameState(GameStateList.TO_GAME_TBC);
             } else {
                 doCommand(cmd);
             }
@@ -120,6 +122,13 @@ public class Interpreter {
 
     private static void checkForNoEnemies() {
         if(Enemy.getActiveEnemies() == 0) {
+            /* if this is not a boss battle, clear the queue, the boss may say something
+             * important
+             */
+            if(!BattleManager.isMandatory()) {
+                TopMessage.flushMsgQueue();
+                TopMessage.showMessage("The last enemy was defeated!");
+            }
             BattleManager.setState(BattleState.VICTORY);
             GameState.setGameState(GameStateList.BATTLE_VICTORY);
         }
