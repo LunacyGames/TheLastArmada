@@ -322,8 +322,8 @@ public class UIHandler {
 
         ui = new ArrayList<UIWidget>();
         UIWidget widget;
-        float[] size = new float[]{0.75f*w, 0.5f*h};
-        float[] position = new float[]{(w - size[0])/2.0f, 0};
+        float[] size = new float[]{0.9f*w, 0.425f*h};
+        float[] position = new float[]{(w - size[0])/2.0f, 0.1f*h};
 
 
         int[] tex = TextureHandler.createTextureFromString(context, gl, "Game Over", false,
