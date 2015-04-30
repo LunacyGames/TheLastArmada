@@ -188,6 +188,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 renderScreen(gl);
                 break;
             case TO_GAME_OVER:
+                /* wait until the top message disappears */
+                SoundEngine.getInstance().playBGMusic("sounds/bgmusic/gameover.ogg");
+                if(!TopMessage.isShown())
+                    GameState.setGameState(GameStateList.GAME_OVER_LOSS_A);
+                renderScreen(gl);
+                break;
+            case GAME_OVER_LOSS_A:
+                /* create the game over screen */
                 UIHandler.setActive(UIList.GAME_OVER);
                 UIHandler.loadUI(context, gl);
                 GameState.setGameState(GameStateList.GAME_OVER_LOSS);
@@ -205,7 +213,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glLoadIdentity();
 
         switch (GameState.getGameState()) {
-            case TITLE_SCREEN: {
+            case TITLE_SCREEN:
                 float[] maxPan = Camera.getMaxPan();
                 gl.glTranslatef(-camera[0], -camera[1], 0.0f);
                 switch (pan_direction) {
@@ -240,7 +248,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 }
                 titleScreen.onDraw(gl);
                 break;
-            }
             case OVERWORLD:
                 camera = Camera.getPan();
                 gl.glTranslatef(-camera[0], -camera[1], 0.0f);
@@ -273,21 +280,27 @@ public class GameRenderer implements GLSurfaceView.Renderer {
                 }
                 /* restore OpenGL stack */
                 for(int i = 0; i < 3; i++) gl.glPopMatrix();
-            break;
+                break;
+            case BATTLE:
+            case BOSS_BATTLE:
+                /* if we are on a battle, process the action queue if ready */
+                /* don't process the next action until the current top message is gone */
+                if(BattleManager.getState() == BattleState.PROCESS_ACTION_QUEUE &&
+                        !TopMessage.isShown()) {
+                    ActionEvent event;
+                    if(ActionEvent.isEmpty() && !TopMessage.isShown()) {
+                        BattleManager.updateState(0, null);
+                    } else if(!TopMessage.isShown()) {
+                        event = ActionEvent.getAction();
+                        Interpreter.doCommand(event.toString());
+                    }
+
+                }
+                break;
+
         }
 
 
-        /* if we are on a battle, process the action queue if ready */
-        if(BattleManager.getState() == BattleState.PROCESS_ACTION_QUEUE) {
-            ActionEvent event;
-            if(ActionEvent.isEmpty() && !TopMessage.isShown()) {
-                BattleManager.updateState(0, null);
-            } else if(!TopMessage.isShown()) {
-                event = ActionEvent.getAction();
-                Interpreter.doCommand(event.toString());
-            }
-
-        }
 
         /* draw UI and top message */
         UIHandler.drawUI(gl);

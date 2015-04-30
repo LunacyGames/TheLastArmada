@@ -186,10 +186,11 @@ public class Interpreter {
             TopMessage.showMessage(message);
         } else {
             if(hp == 0) {
-                /*TODO: game over */
-                message = targetName + " was defeated by " + sourceName +
-                        "! A party member has perished!";
-                GameState.setGameState(GameStateList.GAME_OVER_LOSS);
+                TopMessage.flushMsgQueue();
+                TopMessage.showMessage("A party member has been defeated!");
+                GameState.setGameState(GameStateList.TO_GAME_OVER);
+                PlayerList.getPlayerList().get(target).setHp(hp);
+                return;
             } else {
                 message = targetName + " was dealt " +
                         Integer.toString(damage) + " damage by " + sourceName + "!";
@@ -289,7 +290,12 @@ public class Interpreter {
                 }
             } else {
                 if(hp == 0) {
-                        /* TODO: Game over */
+                    /* party member dead */
+                    TopMessage.flushMsgQueue();
+                    TopMessage.showMessage("A party member has been defeated!");
+                    GameState.setGameState(GameStateList.TO_GAME_OVER);
+                    PlayerList.getPlayerList().get(target).setHp(hp);
+                    return;
                 }
                 PlayerList.getPlayerList().get(target).setHp(hp);
             }
@@ -353,8 +359,11 @@ public class Interpreter {
                 if(damage <= 0) damage = 1;
                 hp -= damage;
                 if(hp <= 0) {
-                    /* TODO: Game over */
-                    hp = 0;
+                    TopMessage.flushMsgQueue();
+                    TopMessage.showMessage("A party member has been defeated!");
+                    GameState.setGameState(GameStateList.TO_GAME_OVER);
+                    PlayerList.getPlayerList().get(target).setHp(0);
+                    return;
                 }
 
                 PlayerList.getPlayerList().get(target).setHp(hp);
