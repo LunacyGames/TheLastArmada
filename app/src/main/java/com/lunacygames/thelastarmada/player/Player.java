@@ -25,6 +25,7 @@ public class Player {
     private double[] growth_percent;
     private int[] growth_rate;
     private int[] max_stats;
+    private int[] deltas;
     private ArrayList<Magic> magic;
     private int activeTexture;
 
@@ -44,13 +45,12 @@ public class Player {
         this.magic = new ArrayList<Magic>();
         this.name = name;
         this.texture = new ArrayList<int[]>(texture);
-        this.exp = exp;
-        this.level = level;
+        this.deltas = new int[7];
     }
 
     /**
-     * set the rate of stat growth for the player
-     * @param rate TODO: what are these?
+     * Set the rate of stat growth for the player
+     * @param rate Growth rate for the player
      */
     public void setGrowthRate(int[] rate) {
         this.growth_rate = new int[6];
@@ -80,11 +80,12 @@ public class Player {
      */
     public void resetStats() {
         System.arraycopy(max_stats, 0, base_stats, 0, max_stats.length);
+        deltas = new int[7];
     }
 
     /**
-     * TODO: what does this do?
-     * @param growth_percent
+     * Set the growth percent rate for each stat of the player
+     * @param growth_percent Growth rate as a number between 0 and 1, inclusive.
      */
     public void setGrowthPercent(double[] growth_percent) {
         this.growth_percent = new double[6];
@@ -250,20 +251,25 @@ public class Player {
     public void addExp(int gain) {
         /* the higher the level, the less exp we get */
         int netGain = exp + (int)(gain / Math.pow(level, BASE));
+        deltas = new int[7];
         Random rng = new Random();
         while(netGain >= 100) {
             level++;
+            deltas[0]++;
             TopMessage.showMessage(this.name + " is now level " + Integer.toString(level) + "!");
             netGain -= 100;
             /* on level up, we increase stats according to their growth rates and percents */
             for(int i = 0; i < 6; i++) {
-                if(rng.nextDouble() < growth_percent[i])
+                if(rng.nextDouble() < growth_percent[i]) {
                     /* if the Random Number Goddess favours the player,
                      * they get a nice stat boost */
                     max_stats[i] += growth_rate[i];
-                else
+                    deltas[i + 1] += growth_rate[i];
+                } else {
                     /* otherwise, we are still nice to them, and give them a minor boost */
+                    deltas[i + 1] += 1;
                     max_stats[i] += 1;
+                }
             }
         }
         exp = netGain;
@@ -278,8 +284,8 @@ public class Player {
     }
 
     /**
-     * TODO: What does this do?
-     * @param exp
+     * Assign experience to a player
+     * @param exp int Experience amount
      */
     public void setExp(int exp) {
         this.exp = exp;
@@ -310,10 +316,14 @@ public class Player {
     }
 
     /**
-     * TODO: what does this do?
-     * @return
+     * Get the current amount of experience a player has.
+     * @return int current amount of experience
      */
     public int getExp() {
         return exp;
+    }
+
+    public int[] getDeltas() {
+        return deltas;
     }
 }
