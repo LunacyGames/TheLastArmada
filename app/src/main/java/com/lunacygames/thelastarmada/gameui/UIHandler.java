@@ -32,6 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
  *
  * @author Orlando Arias
  * @author Eric Johansen
+ * @author Stanislav Ivchenko
  */
 public class UIHandler {
     private static ArrayList<UIWidget> ui;
@@ -83,12 +84,49 @@ public class UIHandler {
             case GAME_OVER:
                 createGameOverUI(context, gl);
                 break;
+            case GAME_TBC:
+                createTBCUI(context, gl);
+                break;
 
             case NONE:
                 /* empty UI */
                 ui = new ArrayList<UIWidget>();
                 break;
         }
+    }
+
+    /**
+     * Create To Be Continued screen
+     * @param context application context
+     * @param gl OpenGL context
+     */
+    private static void createTBCUI(Context context, GL10 gl) {
+        int h = PlatformData.getScreenHeight();
+        int w = PlatformData.getScreenWidth();
+
+        ui = new ArrayList<UIWidget>();
+        UIWidget widget;
+        Bitmap bmp = TextureHandler.loadBitmap(context, "extras/tbc.png");
+        int[] texture = TextureHandler.createTexture(bmp, gl);
+        float[] size = new float[] {w, w * ((float)bmp.getHeight()) / ((float)bmp.getWidth())};
+        widget = new UIWidget("tbc", texture, DEFAULT_TAG, 0, 0, size, null);
+        ui.add(widget);
+
+        /* to main menu button */
+        size = new float[]{0.5f*w, 0.1f*h};
+        float[] pos = new float[]{(w - size[0])/2.0f, 0.7f*h};
+        texture = TextureHandler.createTextureFromString(context, gl, "Return to Main Menu", false,
+                (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
+
+        widget = new UIWidget("Accept", texture, DEFAULT_TAG, pos[0], pos[1], size, new UICallback() {
+            @Override
+            public void onMotionEvent(MotionEvent e, UIWidget w) {
+                SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
+                GameState.setGameState(GameStateList.INIT);
+            }
+        });
+        ui.add(widget);
+
     }
 
     /**
@@ -182,7 +220,7 @@ public class UIHandler {
         /*Accept button*/
         size = new float[]{0.2f*w, 0.15f*h};
         position = new float[]{0.8f*w, 0.8f*h};
-        tex = TextureHandler.createTextureFromString(context, gl, "Accept", false, (int)size[1],
+        tex = TextureHandler.createTextureFromString(context, gl, "OK", false, (int)size[1],
                 (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
         widg = new UIWidget("Accept", tex, DEFAULT_TAG, position[0], position[1], size, new UICallback() {
             @Override
@@ -247,18 +285,25 @@ public class UIHandler {
             ui.add(widg);
             position[1]+= 0.07f*h;
             int[] stats = p.getMaxStats();
+            int[] deltas = p.getDeltas();
             int lvl = p.getLevel();
-            tex = TextureHandler.createTextureFromString(context, gl, Integer.toString(lvl),
+            String st = Integer.toString(lvl)
+                    + (deltas[0] > 0 ? "(+" + Integer.toString(deltas[0]) + ")": "");
+            tex = TextureHandler.createTextureFromString(context, gl, st,
                     false, (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
             widg = new UIWidget("",tex, DEFAULT_TAG, position[0], position[1], size,null);
             ui.add(widg);
             position[1]+= 0.07f*h;
+            int count = 1;
             for(int stat : stats){
-                tex = TextureHandler.createTextureFromString(context, gl, Integer.toString(stat),
+                st = Integer.toString(stat)
+                        + (deltas[count] > 0 ? "(+" + Integer.toString(deltas[count]) + ")": "");
+                tex = TextureHandler.createTextureFromString(context, gl, st,
                         false, (int)size[1], (int)size[0], TextureHandler.TextAlign.ALIGN_CENTER);
                 widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
                 ui.add(widg);
                 position[1]+=0.07f*h;
+                count++;
             }
             position[0]+= 0.15f*w;
             position[1] = 0.35f*h;
@@ -281,16 +326,16 @@ public class UIHandler {
         itemTexs.add(manaTex);
 
         /*add potion textures to screen*/
-        size = new float[]{0.05f*w, 0.05f*w};
-        position = new float[]{0.7f*w, 0.1f*h};
+        size = new float[]{0.1f*h, 0.1f*h};
+        position = new float[]{0.7f*w, 0.15f*h};
         for(int[] tex : itemTexs){
             UIWidget widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
             ui.add(widg);
-            position[1] += 0.1f*h;
+            position[1] += 0.11f*h;
         }
 
-        size = new float[]{0.1f*w, 0.025f*w};
-        position = new float[]{0.75f*w, 0.1f*h};
+        size = new float[]{0.3f*w, 0.05f*h};
+        position = new float[]{0.70f*w + .1f*h, 0.15f*h};
         String[] potNames = new String[]{"Potion", "Concoction", "Force Vial", "Mana Vial"};
         int index = 0;
         for(String name : potNames){
@@ -304,7 +349,7 @@ public class UIHandler {
                     (int)size[0], TextureHandler.TextAlign.ALIGN_LEFT);
             widg = new UIWidget("", tex, DEFAULT_TAG, position[0], position[1], size, null);
             ui.add(widg);
-            position[1] += 0.05f*h;
+            position[1] += 0.06f*h;
             index++;
         }
 
@@ -322,8 +367,8 @@ public class UIHandler {
 
         ui = new ArrayList<UIWidget>();
         UIWidget widget;
-        float[] size = new float[]{0.9f*w, 0.425f*h};
-        float[] position = new float[]{(w - size[0])/2.0f, 0.1f*h};
+        float[] size = new float[]{w, 0.4f*h};
+        float[] position = new float[]{(w - size[0])/2.0f, 0};
 
 
         int[] tex = TextureHandler.createTextureFromString(context, gl, "Game Over", false,
@@ -449,7 +494,8 @@ public class UIHandler {
                 new UICallback() {
                     @Override
                     public void onMotionEvent(MotionEvent e, UIWidget w) {
-                        //PlayerList.setState(PlayerState.IDLE);
+                        /* can't trigger this if we are walking */
+                        if(PlayerList.isPlayerWalking()) return;
                         GameState.setGameState(GameStateList.TO_MENU);
                         SoundEngine.getInstance().playSoundEffect("sounds/effect/accept.ogg");
                     }

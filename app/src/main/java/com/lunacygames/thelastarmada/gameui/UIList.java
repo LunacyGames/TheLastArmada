@@ -7,5 +7,5 @@ public enum UIList {
     BATTLE,
     START,
     OVERWORLD,
-    MENU, VICTORY, GAME_OVER, NONE
+    MENU, VICTORY, GAME_OVER, GAME_TBC, NONE
 }
